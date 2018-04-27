@@ -1,64 +1,37 @@
 <template>
   <div id="app">
-    <img class="circle pulse" src="./assets/logo.png"> <br>
-    <h1 class="btn pulse">{{ msg }}</h1>
-    <div class="progress">
-      <div class="indeterminate"></div>
-  </div>
-    <h2>Essential Links</h2>
-    <ul>
-      <li><a class="btn" href="https://vuejs.org" target="_blank">Core Docs</a></li>
-      <li><a class="btn" href="https://forum.vuejs.org" target="_blank">Forum</a></li>
-      <li><a class="btn" href="https://chat.vuejs.org" target="_blank">Community Chat</a></li>
-      <li><a class="btn" href="https://twitter.com/vuejs" target="_blank">Twitter</a></li>
-    </ul>
-    <h2>Ecosystem</h2>
-    <ul>
-      <li><a href="http://router.vuejs.org/" target="_blank">vue-router</a></li>
-      <li><a href="http://vuex.vuejs.org/" target="_blank">vuex</a></li>
-      <li><a href="http://vue-loader.vuejs.org/" target="_blank">vue-loader</a></li>
-      <li><a href="https://github.com/vuejs/awesome-vue" target="_blank">awesome-vue</a></li>
-    </ul>
-    <img src="./assets/logo.png">
-  </div>
+    
+    <div class="content">
+      <h1>OClary</h1>
+      <router-view ></router-view>
+      <button class="btn">TESTE</button>
+    </div>
+    <app-navbar></app-navbar>
+    
+</div>  
 </template>
 
 <script>
+import Navbar from './telas/Navbar.vue';
 export default {
-  name: 'app',
+  components: {
+    appNavbar: Navbar
+  },
   data () {
     return {
-      msg: ' to Your Vue.js App'
     }
   }
 }
 </script>
 
 <style lang="scss">
-#app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
+.content {
+      padding-left: 300px;
+    }
 
-h1, h2 {
-  font-weight: normal;
-}
-
-ul {
-  list-style-type: none;
-  padding: 0;
-}
-
-li {
-  display: inline-block;
-  margin: 0 10px;
-}
-
-a {
-  color: #42b983;
-}
+    @media only screen and (max-width : 992px) {
+      .content {
+        padding-left: 0;
+      }
+    }
 </style>
