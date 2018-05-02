@@ -6,9 +6,35 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-beta/css/materialize.min.css">
     <!-- Compiled and minified JavaScript -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-beta/js/materialize.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/4.13.0/firebase.js"></script>
+  <script>
+  // Initialize Firebase
+  var config = {
+    apiKey: "AIzaSyBirRb4EwchLfn2tVOrwRl5NxLkXOrwo_4",
+    authDomain: "oclary-5a56e.firebaseapp.com",
+    databaseURL: "https://oclary-5a56e.firebaseio.com",
+    projectId: "oclary-5a56e",
+    storageBucket: "oclary-5a56e.appspot.com",
+    messagingSenderId: "637990936987"
+  };
+  firebase.initializeApp(config);
+  const database = firebase.database();
+
+//carregar durante o evnto 
+  database.ref('escolas').on('value', function(snapshot) {
+    console.log(snapshot.val());
+  })
+  
+  database.ref('escolas').on('value', snapshot => console.log(snapshot.val()));
+  
+  database.ref('escolas').on('child_added', snapshot => console.log(snapshot.val()));
+  
+
+</script>
   </head>
   <body>
     <div id="app"></div>
     <script src="/dist/build.js"></script>
   </body>
+
 </html>

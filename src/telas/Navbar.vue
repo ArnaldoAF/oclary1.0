@@ -6,10 +6,7 @@
     </ul>
     <a href="#" data-target="slide-out" class="sidenav-trigger"><i class="material-icons">menu</i></a>
           
-    <ul id="slide-out" class=" ">
-        
-    </ul>
-    <a href="#" data-target="slide-out" class="sidenav-trigger"><i class="material-icons">menu</i></a>
+
      
 </div>
 </template>
