@@ -10,4 +10,7 @@ var config = {
   };
 
 var app = Firebase.initializeApp(config);
-export const database = app.database();
+const database = app.database();
+//const escolas = database.ref('escolas');
+
+export default database;

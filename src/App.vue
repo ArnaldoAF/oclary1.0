@@ -2,9 +2,7 @@
   <div id="app">
     
     <div class="content">
-      <h1>OClary</h1>
       <router-view ></router-view>
-      <button class="btn">TESTE</button>
     </div>
     <app-navbar></app-navbar>
     
