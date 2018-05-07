@@ -95,17 +95,35 @@
             }
         },
         created () {
-            Database.ref('escolas').on('child_added', snapshot => this.escolasArray.push({...snapshot.val(), id: snapshot.key}))
-            Database.ref('escolas').on('child_removed', snapshot => {
+            Database.ref('escolas').orderByChild('nome').on('child_added', snapshot => {
+                this.escolasArray.push({...snapshot.val(), id: snapshot.key});
+                this.escolasArray.sort(function(a,b) {
+                    if (a.nome.toUpperCase() > b.nome.toUpperCase()) return 1
+                    if (a.nome.toUpperCase() < b.nome.toUpperCase()) return -1
+                    return 0
+                })
+            
+            })
+            Database.ref('escolas').orderByChild('nome').on('child_removed', snapshot => {
                 const EscolaRemovida = this.escolasArray.find(escola => escola.id === snapshot.key)
                 const index = this.escolasArray.indexOf(EscolaRemovida)
-                this.escolasArray.splice(index, 1);
+                this.escolasArray.splice(index, 1)
+                this.escolasArray.sort(function(a,b) {
+                    if (a.nome.toUpperCase() > b.nome.toUpperCase()) return 1
+                    if (a.nome.toUpperCase() < b.nome.toUpperCase()) return -1
+                    return 0
+                })
             })
-            Database.ref('escolas').on('child_changed', snapshot => {
+            Database.ref('escolas').orderByChild('nome').on('child_changed', snapshot => {
                 const EscolaEditada = this.escolasArray.find(escola => escola.id === snapshot.key)
                 EscolaEditada.nome = snapshot.val().nome
                 //const index = this.escolasArray.indexOf(EscolaEditada)
                 //this.escolasArray.splice(index, 1,"snapshot.val().nome");
+                this.escolasArray.sort(function(a,b) {
+                    if (a.nome.toUpperCase() > b.nome.toUpperCase()) return 1
+                    if (a.nome.toUpperCase() < b.nome.toUpperCase()) return -1
+                    return 0
+                })
             })
             //Database.ref('escolas').on('value', snapshot => console.log(snapshot.val()));
             
