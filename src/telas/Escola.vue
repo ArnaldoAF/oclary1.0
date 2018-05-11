@@ -1,20 +1,28 @@
 <template>
     <div>
     <h1>Escolas</h1>
+    
     <div class="container">
         <div v-if="loading" class="progress center">
             <div class="indeterminate"></div>
+        </div>
+        <div v-if="!loading && escolasArray.length==0">
+            <h3>SEM ESCOLAS</h3>
         </div>
         
             <ul class="collapsible" >
                 <li v-for="escola in escolasArray" class="collection-item">
                 <div class="collapsible-header">
                     {{escola.nome}}
-
                     
                     <span class=" badge">
-                        <span class="new badge left" data-badge-caption=""> {{turmasArray.filter( function(turma){return (turma.idEscola===escola.id);}).length }} </span>
-                        <span class="badge left" data-badge-caption=""></span>
+                        <span class="badge left" data-badge-caption=""> 
+                            <i class="small material-icons ">group_add</i> 
+                            <span class="new badge right" data-badge-caption="">
+                                {{turmasArray.filter( function(turma){return (turma.idEscola===escola.id);}).length }}
+                            </span>
+                        </span>
+                        <span class="badge left" data-badge-caption="">  </span>
                         
                         <a class="btn-floating  btn-small modal-trigger" href="#modal2" @click="idEscolaTurma=escola.id" ><i class="material-icons">group_add</i></a>
                         <a class="btn-floating  btn-small modal-trigger" href="#modal1" @click="EditarEscola(escola)" ><i class="material-icons">edit</i></a>
@@ -31,7 +39,7 @@
                         <td class="right">
                             <a class="btn-floating  btn-small modal-trigger" href="#modal2" @click="EditarTurma(turma)" ><i class="material-icons">edit</i></a>
                             <a class="btn-floating  btn-small" @click="ExcluirTurma(turma)"><i class="material-icons">delete</i></a>
-                            <a class="btn-floating  btn-small" ><i class="material-icons">forward</i></a>
+                            <router-link class="btn-floating  btn-small" :to="'/escola/turma/'+turma.id+''"><i class="material-icons">forward</i></router-link>
                         </td>
                         </tr>
                     </tbody>
@@ -54,7 +62,7 @@
             <div id="modal1" class="modal">
             <div class="modal-content">
                 <div class="input-field ">
-                <input id="last_name" type="text" v-model="nomeEscola" autofocus required class="validate">
+                <input id="last_name" placeholder="NOME DA ESCOLA" type="text" v-model="nomeEscola" autofocus required class="validate">
                 <label for="last_name">Nome da Escola</label>
                 </div>
             </div>
@@ -68,11 +76,11 @@
             <div id="modal2" class="modal">
             <div class="modal-content">
                 <div class="input-field ">
-                <input id="last_name" type="text" v-model="nomeTurma" autofocus class="validate">
+                <input id="last_name" placeholder="NOME DA TURMA" type="text" v-model="nomeTurma" autofocus class="validate">
                 <label for="last_name">Nome da Turma</label>
                 </div>
                 <div class="input-field ">
-                <input id="last_name" type="text" v-model="disciplinaTurma" autofocus class="validate">
+                <input id="last_name" placeholder="DISCIPLINA DA TURMA" type="text" v-model="disciplinaTurma" autofocus class="validate">
                 <label for="last_name">Disciplina da Turma</label>
                 </div>
             </div>
@@ -188,6 +196,11 @@ export default {
     created() {
         // ESCOLAS
         //Database.ref('escolas').orderByChild('nome').equalTo('Etec').
+
+        this.escolasRef.on("value", snapshot => {
+            this.loading = false;
+        });
+
         this.escolasRef.on("child_added", snapshot => {
             this.escolasArray.push({ ...snapshot.val(), id: snapshot.key });
 
@@ -196,7 +209,7 @@ export default {
                 if (a.nome.toUpperCase() < b.nome.toUpperCase()) return -1;
                 return 0;
             });
-            this.loading = false;
+            //this.loading = false;
         });
 
         this.escolasRef.on("child_removed", snapshot => {

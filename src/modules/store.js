@@ -5,9 +5,10 @@ Vue.use(Vuex);
 
 export const store = new Vuex.Store({
     state: {
-        test:'test'
+        test: 'test',
+        turmaAtual: null
     },
-    modules:{
+    modules: {
 
     },
 });
