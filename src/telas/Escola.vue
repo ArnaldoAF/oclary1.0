@@ -1,23 +1,22 @@
 <template>
     <div>
-    <h1>Escolas</h1>
     
     <div class="container">
         <div v-if="loading" class="progress center">
             <div class="indeterminate"></div>
         </div>
-        <div v-if="!loading && escolasArray.length==0">
+        <div v-else-if="!loading && escolasArray.length==0">
             <h3>SEM ESCOLAS</h3>
         </div>
         
-            <ul class="collapsible" >
+            <ul v-else class="collapsible" >
                 <li v-for="escola in escolasArray" class="collection-item">
                 <div class="collapsible-header">
                     {{escola.nome}}
                     
                     <span class=" badge">
                         <span class="badge left" data-badge-caption=""> 
-                            <i class="small material-icons ">group_add</i> 
+                            <i class="small material-icons ">group  </i> 
                             <span class="new badge right" data-badge-caption="">
                                 {{turmasArray.filter( function(turma){return (turma.idEscola===escola.id);}).length }}
                             </span>
@@ -32,6 +31,15 @@
                 </div>
                 <div class="collapsible-body">
                     <table class="highlight">
+                        <!--
+                    <thead>
+                        <tr>
+                            <th>Turma</th>
+                            <th>Disciplina</th>
+                            <th class="right">Ações</th>
+                        </tr>
+                    </thead>
+                    -->
                     <tbody>
                         <tr v-for="turma in turmasArray" v-if="turma.idEscola===escola.id">
                         <td> {{turma.nome}} </td>
@@ -39,11 +47,25 @@
                         <td class="right">
                             <a class="btn-floating  btn-small modal-trigger" href="#modal2" @click="EditarTurma(turma)" ><i class="material-icons">edit</i></a>
                             <a class="btn-floating  btn-small" @click="ExcluirTurma(turma)"><i class="material-icons">delete</i></a>
-                            <router-link class="btn-floating  btn-small" :to="'/escola/turma/'+turma.id+''"><i class="material-icons">forward</i></router-link>
+                            <router-link class="btn-floating  btn-small" :to="'/escola/turma/'+turma.id+''" ><i @click="StoreTurma(turma)" class="material-icons">forward</i></router-link>
                         </td>
                         </tr>
                     </tbody>
                     </table>
+
+                    <ul class="collection hide">
+                        <li v-for="turma in turmasArray" v-if="turma.idEscola===escola.id" class="collection-item">
+                            <div class="container">
+                            {{turma.nome}} - {{turma.disciplina}}
+
+                            <a href="#!" class="btn-floating btn-small white"></a>
+                            <a class="btn-floating  btn-small modal-trigger right" href="#modal2" @click="EditarTurma(turma)" ><i class="material-icons">edit</i></a>
+                            <a class="btn-floating  btn-small right" @click="ExcluirTurma(turma)"><i class="material-icons">delete</i></a>
+                            <router-link class="btn-floating  btn-small right" :to="'/escola/turma/'+turma.id+''" ><i @click="StoreTurma(turma)" class="material-icons">forward</i></router-link>
+                            teste
+                            </div>
+                        </li>
+                    </ul>
                 </div>
                 </li>
             </ul>
@@ -62,8 +84,10 @@
             <div id="modal1" class="modal">
             <div class="modal-content">
                 <div class="input-field ">
-                <input id="last_name" placeholder="NOME DA ESCOLA" type="text" v-model="nomeEscola" autofocus required class="validate">
-                <label for="last_name">Nome da Escola</label>
+                <input id="last_name" placeholder="NOME DA ESCOLA" type="text" v-model="nomeEscola" autofocus required class="validate active">
+                
+                <label class="active" for="last_name">Nome da Escola</label>
+                
                 </div>
             </div>
             <div class="modal-footer">
@@ -77,11 +101,15 @@
             <div class="modal-content">
                 <div class="input-field ">
                 <input id="last_name" placeholder="NOME DA TURMA" type="text" v-model="nomeTurma" autofocus class="validate">
-                <label for="last_name">Nome da Turma</label>
+                
+                    <label class="active" for="last_name">Nome da Turma</label>
+                
                 </div>
                 <div class="input-field ">
                 <input id="last_name" placeholder="DISCIPLINA DA TURMA" type="text" v-model="disciplinaTurma" autofocus class="validate">
-                <label for="last_name">Disciplina da Turma</label>
+                
+                <label class="active" for="last_name">Disciplina da Turma</label>
+                 
                 </div>
             </div>
             <div class="modal-footer">
@@ -98,21 +126,30 @@
 </template>
 <script>
 import Database from "../firebase.js";
+import {mapMutations} from 'vuex';
 
 export default {
     firebase: {
         //escolas: Database.ref('escolas')
     },
+    computed:{
+        ...mapMutations([
+            'TurmaAtual'
+        ])
+    },
     mounted: function() {
         // Jquery para o modal
         $(document).ready(function() {
+            
+            $(".collapsible").collapsible();
             $(".modal").modal();
             //$(".modal").modal('open');
             //$("#last_name").focus();
             $(document).on("shown.bs.modal", function(e) {
                 $("[autofocus]", e.target).focus();
             });
-            $(".collapsible").collapsible();
+            
+            //Materialize.updateTextFields();
         });
     },
     data() {
@@ -170,6 +207,9 @@ export default {
                 nome: this.nomeTurma,
                 disciplina: this.disciplinaTurma
             });
+
+
+           
             this.nomeTurma = "";
             this.disciplinaTurma = "";
         },
@@ -191,14 +231,29 @@ export default {
             this.nomeTurma = "";
             this.disciplinaTurma = "";
             this.editingTurma = null;
+        },
+
+        //VUEX
+        StoreTurma(turma) {
+            
+            this.$store.commit("TurmaAtual", {
+                id: turma.id,
+                nome: turma.nome,
+                disciplina: turma.disciplina
+            });
+            
         }
+
     },
     created() {
         // ESCOLAS
         //Database.ref('escolas').orderByChild('nome').equalTo('Etec').
 
+        this.$store.commit("TurmaAtual",null);
+
         this.escolasRef.on("value", snapshot => {
             this.loading = false;
+            
         });
 
         this.escolasRef.on("child_added", snapshot => {

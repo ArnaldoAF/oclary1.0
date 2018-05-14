@@ -1,19 +1,28 @@
 <template>
   <div id="app">
     
+    
     <div class="content">
-      <router-view ></router-view>
+      <appBreadCrumb></appBreadCrumb>
+      <div class="card-panel">
+        <router-view></router-view>
+      </div>
     </div>
+    
     <app-navbar></app-navbar>
+
     
 </div>  
 </template>
 
 <script>
 import Navbar from './telas/Navbar.vue';
+import BreadCrumb from './telas/BreadCrumb.vue'
+
 export default {
   components: {
-    appNavbar: Navbar
+    appNavbar: Navbar,
+    appBreadCrumb: BreadCrumb
   },
   data () {
     return {
