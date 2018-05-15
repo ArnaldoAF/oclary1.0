@@ -10,7 +10,7 @@
         </div>
         
             <ul v-else class="collapsible" >
-                <li v-for="escola in escolasArray" class="collection-item">
+                <li v-for="escola in escolasArray" class="collection-item active">
                 <div class="collapsible-header">
                     {{escola.nome}}
                     
@@ -137,19 +137,24 @@ export default {
             'TurmaAtual'
         ])
     },
+    beforeUpdate: function() {
+        // Jquery para o modal
+            $(document).ready(function() {
+            $(".collapsible").collapsible();
+            
+            console.log($(".collapsible").collapsible());
+        });
+
+    },
     mounted: function() {
         // Jquery para o modal
         $(document).ready(function() {
-            
             $(".collapsible").collapsible();
             $(".modal").modal();
-            //$(".modal").modal('open');
-            //$("#last_name").focus();
             $(document).on("shown.bs.modal", function(e) {
                 $("[autofocus]", e.target).focus();
             });
-            
-            //Materialize.updateTextFields();
+            console.log($(".collapsible").collapsible());
         });
     },
     data() {
@@ -248,6 +253,7 @@ export default {
     created() {
         // ESCOLAS
         //Database.ref('escolas').orderByChild('nome').equalTo('Etec').
+       
 
         this.$store.commit("TurmaAtual",null);
 

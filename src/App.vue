@@ -27,7 +27,25 @@ export default {
   data () {
     return {
     }
-  }
+  },
+  mounted: function() {
+        // Jquery para o modal
+        $(document).ready(function() {
+            
+            $(".collapsible").collapsible();
+            $(".modal").modal();
+            //$(".modal").modal('open');
+            //$("#last_name").focus();
+            $(document).on("shown.bs.modal", function(e) {
+                $("[autofocus]", e.target).focus();
+            });
+            $(".collapsible").collapsible();
+            
+            console.log($(".collapsible").collapsible());
+            
+            //Materialize.updateTextFieldscollapsible
+        });
+    }
 }
 </script>
 
