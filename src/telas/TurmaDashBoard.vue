@@ -11,7 +11,14 @@
         disciplina da turma : {{objTurma.disciplina}} <br>
 
         <div class="card-panel">
-            Numero de Alunos: <span class="new badge blue"  data-badge-caption=""> 0 </span>
+           <i class="material-icons tiny">person</i> Numero de Alunos: <span class="new badge blue"  data-badge-caption=""> {{objTurma.alunosCount}} </span>
+        </div>
+
+        <div class="row card-panel">
+            <div class="col s3 center-align"> <router-link class="btn-floating s3 btn-large blue" :to="'/escola/turma/'+objTurma.id+'/alunos'"><i class="material-icons">person</i></router-link> </div>
+            <div class="col s3 center-align"> <router-link class="btn-floating s3 btn-large blue " :to="'/escola/turma/'+objTurma.id+'/planejamento'"><i class="material-icons">event</i></router-link></div>
+            <div class="col s3 center-align"> <router-link class="btn-floating s3 btn-large blue disabled" :to="'/escola/turma/'+objTurma.id+'/provas'"><i class="material-icons">style</i></router-link></div>
+            <div class="col s3 center-align"> <router-link class="btn-floating s3 btn-large blue disabled" :to="'/escola/turma/'+objTurma.id+'/presencas'"><i class="material-icons">done</i></router-link></div>
         </div>
         
         </div>
@@ -21,12 +28,15 @@
 <script>
 
     import Database from "../firebase.js";
-    import {mapMutations} from 'vuex';
+    import {mapMutations, mapGetters} from 'vuex';
 
 export default{
     firebase:{},
     computed:{
         ...mapMutations([
+            'TurmaAtual'
+        ]),
+        ...mapGetters([
             'TurmaAtual'
         ])
     },
@@ -35,6 +45,7 @@ export default{
             loading: true,
             idTurma: this.$route.params.id,
             turmaRef: Database.ref("turmas"),
+            AlunosRef:Database.ref("alunos/"+this.$store.getters.TurmaAtual.id),
             objTurma: null
         }
     },
@@ -42,12 +53,14 @@ export default{
 
     },
     created() {
-
+        console.log("Turma atual is null = " + (this.$store.getters.TurmaAtual==null));
         
-        this.turmaRef.orderByKey().equalTo(this.idTurma).on("child_added", snapshot => {
-            this.objTurma = {...snapshot.val(), id: snapshot.key };
-            this.$store.commit("TurmaAtual",this.objTurma);
-        });
+            this.turmaRef.orderByKey().equalTo(this.idTurma).on("child_added", snapshot => {
+                this.objTurma = {...snapshot.val(), id: snapshot.key };
+                this.$store.commit("TurmaAtual",this.objTurma);
+            });
+        
+       
         this.turmaRef.on("value", snapshot => {
             this.loading = false;
             
