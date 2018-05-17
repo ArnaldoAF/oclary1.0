@@ -7,6 +7,7 @@
           <input id="icon_prefix" type="text" class="validate" v-model="pesquisa">
           <label for="icon_prefix">Aluno ou Codigo</label>
         </div>
+
         <table class="highlight">
             <thead>
                 <tr>
@@ -69,9 +70,6 @@ import Database from "../firebase.js";
 import {mapMutations, mapGetters} from 'vuex';
 
 export default {
-    firebase: {
-        //escolas: Database.ref('escolas')
-    },
     computed:{
         ...mapMutations([
             'TurmaAtual'
@@ -151,9 +149,6 @@ export default {
                 this.alunosCountLocal + 1
             );
             this.alunosCountLocal++;
-            
-           
-
         },
         ExcluirAluno(aluno) {
             Database.ref("turmas/"+ this.$store.getters.TurmaAtual.id).child("alunosCount").set(
@@ -170,12 +165,11 @@ export default {
         },
         UpdateAluno(){
             console.log("Update Aluno");
+            var id = this.objAluno.id;
+            delete this.objAluno.id;
             //console.log(this.objAluno);
-            this.AlunosRef.child(this.objAluno.id)
-            .update({
-                codigo: this.objAluno.codigo,               
-                nome: this.objAluno.nome,
-            });
+            this.AlunosRef.child(id)
+            .update(this.objAluno);
             
             this.ResetObjAluno();
             
