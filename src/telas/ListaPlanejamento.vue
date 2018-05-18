@@ -3,40 +3,55 @@
         Planejamento
 
         <div class="row">
-            <div class="input-field col s9">
+            <div class="input-field col s6">
                 <i class="material-icons prefix">search</i>
                 <input id="icon_prefix" type="text" class="validate" v-model="pesquisa">
-                <label for="icon_prefix">Aluno ou Codigo</label>
+                <label for="icon_prefix">Conteudo</label>
             </div>
 
             <div class="input-field col s3">
-                <select>
+                <select v-model="filtroAplicado">
                     <option value="1">Todos</option>
                     <option value="2">Completados</option>
                     <option value="3">Não Completados</option>
                 </select>
                 <label>Filtragem</label>
             </div>
+
+            <div class="input-field col s3">
+                <select v-model="filtroMes">
+                    <option value="0">Todos</option>
+                    <option value="01">Janeiro</option>
+                    <option value="02">Fevereiro</option>
+                    <option value="03">Março</option>
+                    <option value="04">Abril</option>
+                    <option value="05">Maio</option>
+                    <option value="06">Junho</option>
+                    <option value="07">Julho</option>
+                    <option value="08">Agosto</option>
+                    <option value="09">Setembro</option>
+                    <option value="10">Outubro</option>
+                    <option value="11">Novembro</option>
+                    <option value="12">Dezembro</option>
+                </select>
+                <label>Por Mês</label>
+            </div>
         </div>
 
         <table class="highlight">
             <thead>
-                <tr>
-                    <th>
-                        Data 
-                    </th>
-                    <th>
-                        Aluno
-                    </th>
+                <tr >
+                    <th>Data</th>
+                    <th>Counteudo</th>
                     <th>Aplicado</th>
                     <th>Ações</th>
                 </tr>
             </thead>
             <tbody>
-                <tr v-for="planejamento in PlanejamentoArray" >
-                    <td>{{planejamento.data}}</td>
-                    <td>{{planejamento.conteudo}}</td>
-                    <td>
+                <tr v-for="planejamento in PlanejamentoArray" v-if="(FiltroPorAplicacao(planejamento) && FiltroPorMes(planejamento) && FiltroPorPesquisa(planejamento))">
+                    <td>{{planejamento.data | formatDate}}</td>
+                    <td class="" style="text-overflow:ellipsis; overflow: hidden;">{{planejamento.conteudo | truncate 5 }}</td>
+                    <td >
                         <i v-if="planejamento.aplicado" class="material-icons green-text">check</i>
                         <i v-else class="material-icons red-text">clear</i>
                         
@@ -85,6 +100,7 @@
 </template>
 <script>
 import Database from "../firebase.js";
+
 import {mapMutations, mapGetters} from 'vuex';
 
 export default {
@@ -100,6 +116,9 @@ export default {
         // Jquery para o modal
         $(document).ready(function() {
         });
+    },
+    beforeMount: function() {
+
     },
     mounted: function() {
         // Jquery para o modal
@@ -122,8 +141,10 @@ export default {
         return { 
             loading: false,
             pesquisa:'',
+            filtroAplicado:1,
+            filtroMes:0,
 
-            PlanejamentoRef: Database.ref("planejamento"+this.$store.getters.TurmaAtual.id),
+            PlanejamentoRef: Database.ref("planejamento/"+this.$store.getters.TurmaAtual.id),
             PlanejamentoArray:[],
             objPlanejamento:{
                 id:'',
@@ -134,7 +155,19 @@ export default {
         }
     },
     watch:{
+        filtroAplicado: function (val){
 
+        }
+    },
+    filters:{
+        formatDate: function(value) {
+            if (value) {
+                return moment(String(value)).format('DD/MM');
+            }
+        },
+        truncate: function(text,stop,clamp) {
+            return text.slice(0, stop) + (stop < text.length ? clamp || '...' : '');
+        }
     },
     methods:{
         ResetObjPlanejamento() {
@@ -178,6 +211,30 @@ export default {
                 return 0;
             });
             
+        },
+
+        FiltroPorAplicacao(planejamento) {
+            if (this.filtroAplicado==2 ) {
+                if (planejamento.aplicado == true) return true;
+                return false;
+            }
+            if (this.filtroAplicado==3) {
+                if (planejamento.aplicado == false) return true;
+                return false;
+            }
+            
+            return true;
+        },
+        FiltroPorMes(planejamento) {
+            
+            if(this.filtroMes==0) return true;
+            if(this.filtroMes==moment(String(planejamento.data)).format('MM')) return true;
+            
+            return false;
+
+        },
+        FiltroPorPesquisa(planejamento) {
+            return planejamento.conteudo.toUpperCase().indexOf(this.pesquisa.toUpperCase())!==-1 || this.pesquisa==='';
         }
     },
     created() {

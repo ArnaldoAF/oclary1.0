@@ -2,10 +2,12 @@
     <div>
         
         ALUNOS 
-        <div class="input-field col s3">
+        <div class="row">
+        <div class="input-field col s6">
           <i class="material-icons prefix">search</i>
           <input id="icon_prefix" type="text" class="validate" v-model="pesquisa">
           <label for="icon_prefix">Aluno ou Codigo</label>
+        </div>
         </div>
 
         <table class="highlight">
