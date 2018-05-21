@@ -59,6 +59,11 @@
                     <td class="left">
                         <a class="btn-floating  btn-small modal-trigger" href="#modal1" @click="EditarPlanejamento(planejamento)"><i class="material-icons">edit</i></a>
                         <a class="btn-floating  btn-small modal-trigger" href="#!" @click="ExcluirPlanejamento(planejamento)"><i class="material-icons">delete</i></a>
+                        <a class="btn-floating  btn-small modal-trigger" href="#!" @click="planejamento.aplicado=!planejamento.aplicado; EditarPlanejamento(planejamento); UpdatePlanejamento(); ">
+                            <i v-if="!planejamento.aplicado" class="material-icons ">check</i>
+                        <i v-else class="material-icons ">clear</i>
+                        </a>
+                        
                     </td>
 
                     
