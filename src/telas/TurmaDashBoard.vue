@@ -17,7 +17,7 @@
         <div class="row card-panel">
             <div class="col s3 center-align"> <router-link class="btn-floating s3 btn-large blue" :to="'/escola/turma/'+objTurma.id+'/alunos'"><i class="material-icons">person</i></router-link> </div>
             <div class="col s3 center-align"> <router-link class="btn-floating s3 btn-large blue " :to="'/escola/turma/'+objTurma.id+'/planejamento'"><i class="material-icons">event</i></router-link></div>
-            <div class="col s3 center-align"> <router-link class="btn-floating s3 btn-large blue disabled" :to="'/escola/turma/'+objTurma.id+'/provas'"><i class="material-icons">style</i></router-link></div>
+            <div class="col s3 center-align"> <router-link class="btn-floating s3 btn-large blue " :to="'/escola/turma/'+objTurma.id+'/provas'"><i class="material-icons">style</i></router-link></div>
             <div class="col s3 center-align"> <router-link class="btn-floating s3 btn-large blue disabled" :to="'/escola/turma/'+objTurma.id+'/presencas'"><i class="material-icons">done</i></router-link></div>
         </div>
         
