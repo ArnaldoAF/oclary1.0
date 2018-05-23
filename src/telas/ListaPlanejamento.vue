@@ -203,7 +203,7 @@ export default {
             var id = this.objPlanejamento.id;
             delete this.objPlanejamento.id;
             this.PlanejamentoRef.child(id)
-            .update(this.objPlanejamento);
+                .update(this.objPlanejamento);
             console.log("antes update");
             this.ResetObjPlanejamento();
         },
@@ -281,6 +281,9 @@ export default {
             //const index = this.escolasArray.indexOf(EscolaEditada)
             //this.escolasArray.splice(index, 1,"snapshot.val().nome");
         });
+
+
+       
     }
 }
 </script>

@@ -3,11 +3,11 @@
         
         ALUNOS 
         <div class="row">
-        <div class="input-field col s6">
-          <i class="material-icons prefix">search</i>
-          <input id="icon_prefix" type="text" class="validate" v-model="pesquisa">
-          <label for="icon_prefix">Aluno ou Codigo</label>
-        </div>
+            <div class="input-field col s6">
+                <i class="material-icons prefix">search</i>
+                <input id="icon_prefix" type="text" class="validate" v-model="pesquisa">
+                <label for="icon_prefix">Aluno ou Codigo</label>
+            </div>
         </div>
 
         <table class="highlight">
@@ -31,10 +31,11 @@
                     <td>{{aluno.codigo}}</td>
                     <td>{{aluno.nome}}</td>
                     <td class="left">
+                        <a class="btn-floating  btn-small modal-trigger disabled" href="#!" ><i class="material-icons">assignment_turned_in</i></a>
+                        <a class="btn-floating  btn-small modal-trigger tooltipped" data-position="bottom"  @click="EditarAluno(aluno)" data-tooltip="NOTAS" href="#modal2" ><i class="material-icons">exposure_plus_1</i></a>
                         <a class="btn-floating  btn-small modal-trigger" href="#modal1" @click="EditarAluno(aluno)"><i class="material-icons">edit</i></a>
                         <a class="btn-floating  btn-small modal-trigger" href="#!" @click="ExcluirAluno(aluno)"><i class="material-icons">delete</i></a>
-                        <a class="btn-floating  btn-small modal-trigger disabled" href="#!" ><i class="material-icons">assignment_turned_in</i></a>
-                        <a class="btn-floating  btn-small modal-trigger tooltipped disabled" data-position="bottom" data-tooltip="NOTAS" href="#modal2" ><i class="material-icons">exposure_plus_1</i></a>
+                        
                     </td>
 
                     
@@ -61,6 +62,30 @@
                 <button class="btn modal-action modal-close red" @click="ResetObjAluno()">CANCELAR</button>
                 <button class="btn modal-action modal-close green" v-if="objAluno.id===''" @click="InserirAluno()">INCLUIR</button>
                 <button class="btn modal-action modal-close green" v-else @click="UpdateAluno()">EDITAR</button>
+            </div>
+        </div>
+
+        <div id="modal2" class="modal">
+            <div>
+                <div class="modal-content">
+                    <h3>Média:  </h3>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Prova</th>
+                                <th>Peso</th>
+                                <th>Nota</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="prova in objAluno.notas">
+                                <td>{{prova.prova}}</td>
+                                <td>{{prova.peso}}0%</td>
+                                <td>{{prova.nota | formatNota}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
         
@@ -117,6 +142,12 @@ export default {
 
             alunosCountLocal:this.$store.getters.TurmaAtual.alunosCount
 
+        }
+    },
+    filters:{
+        formatNota: function(val){
+            //var number = +val.replace(/[^\d.]/g, '');
+            return isNaN(val) ? 0 : parseFloat(val.toFixed(2));
         }
     },
     watch:{
