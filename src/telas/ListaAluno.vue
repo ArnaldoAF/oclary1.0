@@ -68,7 +68,7 @@
         <div id="modal2" class="modal">
             <div>
                 <div class="modal-content">
-                    <h3>Média:  </h3>
+                    <h3>Média: {{media | formatNota}} </h3>
                     <table>
                         <thead>
                             <tr>
@@ -131,6 +131,8 @@ export default {
             codeOrdem: true,
             nomeOrdem: true,
 
+            media:0,
+
             AlunosRef:Database.ref("alunos/"+this.$store.getters.TurmaAtual.id),
             AlunosArray:[],
             objAluno:{
@@ -166,7 +168,8 @@ export default {
                 id:'',
                 codigo:'',
                 nome:''
-            }
+            };
+            this.media=0
         },
         InserirAluno() {
             console.log("Inserir Aluno");
@@ -192,7 +195,21 @@ export default {
             
         },
         EditarAluno(aluno) {
+            this.media=0;
             this.objAluno = Object.assign({},aluno);
+            console.log(this.objAluno.nome);
+            //console.log(this.media);
+            
+            for(var prova in this.objAluno.notas) {
+                this.media+=this.objAluno.notas[prova].nota*(this.objAluno.notas[prova].peso/10);
+                
+            }
+            console.log(this.media);
+
+            //this.objAluno.notas.forEach(nota => {
+            //    this.media=10//nota.nota*(nota.peso/10);
+            //});
+            
             console.log("Editar Aluno");
             //console.log(this.objAluno);
         },

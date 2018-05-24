@@ -43,7 +43,7 @@
                     <td>{{prova.nome}}</td>
                     <td>{{prova.peso}}0%</td>
                     <td class="left">
-                        <a class="btn-floating  btn-small modal-trigger" href="#modal2" @click="EditarProva(prova)"><i class="material-icons">exposure_plus_1</i></a>
+                        <a class="btn-floating  btn-small modal-trigger" href="#modal2" @click="EditarProva(prova); AtribuirNota()"><i class="material-icons">exposure_plus_1</i></a>
                         <a class="btn-floating  btn-small modal-trigger" href="#modal1" @click="EditarProva(prova)"><i class="material-icons">edit</i></a>
                         <a class="btn-floating  btn-small modal-trigger" href="#!" @click="ExcluirProva(prova)"><i class="material-icons">delete</i></a>
                         
@@ -121,10 +121,23 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-for="nota in objProva.notas">
+                        <tr v-for="nota in modalNota">
                             <td>{{nota.codigo}} </td>
                             <td>{{nota.nome_aluno}} </td>                            
-                            <td>{{nota.nota | formatNota}} </td>
+                            <td>
+                                <div v-if="(nota !== editNota)">
+                                    {{nota.nota | formatNota}} 
+                                    <a class="btn-floating  btn-small"  href="#!" @click="EditarNota(nota)"><i class="material-icons">edit</i></a>
+                                </div>
+                                <div v-else class="row">
+                                    <input id="icon_prefix" v-model="novaNota" type="text" class="validate col s2">
+                                    <a class="btn-floating  btn-small" href="#!" @click="nota.nota=Number(novaNota);editNota=null;"><i class="material-icons">done</i></a>
+                                    <a class="btn-floating  btn-small" href="#!" @click="editNota=null"><i class="material-icons">clear</i></a>
+
+
+                                </div>
+
+                            </td>
                         </tr>
                         
                     </tbody>
@@ -134,8 +147,8 @@
 
             </div>
             <div class="modal-footer">
-                <button class="btn modal-action modal-close red" @click="ResetObjProva()">CANCELAR</button>
-                <button class="btn modal-action modal-close green" @click="UpdateProva()">EDITAR</button>
+                <button class="btn modal-action modal-close red" @click="modalNota=null;">CANCELAR</button>
+                <button class="btn modal-action modal-close green" @click="UpdateNota()">EDITAR</button>
             </div>
         </div>
 
@@ -160,7 +173,6 @@ export default {
         });
     },
     beforeMount: function() {
-
     },
     mounted: function() {
         // Jquery para o modal
@@ -190,6 +202,9 @@ export default {
             
             codeOrdem: true,
             nomeOrdem: true,
+            média:0,
+
+            
 
             ProvaRef: Database.ref("provas/"+this.$store.getters.TurmaAtual.id),
             ProvaArray:[],
@@ -202,7 +217,13 @@ export default {
                 notas:[]
             },
             AlunosRef: Database.ref("alunos").child(this.$store.getters.TurmaAtual.id),
-            AlunosArray:[]
+            AlunosArray:[],
+
+            //variaveis da nota
+            modalNota:null, //esse é o objeto das notas, depois é atribuido no objeto nas notas originais
+            editNota:null,
+            novaNota:0
+
         }
     },
     watch:{
@@ -223,6 +244,7 @@ export default {
         },
         formatNota: function(val){
             //var number = +val.replace(/[^\d.]/g, '');
+            val = Number(val);
             return isNaN(val) ? 0 : parseFloat(val.toFixed(2));
         }
     },
@@ -281,30 +303,80 @@ export default {
         },
         UpdateProva() {
             console.log("antes update");
+            var thisnota = 0;
             var prova_id = this.objProva.id;
             delete this.objProva.id;
             //this.objProva.notas=[];
-
+            console.log(Array.isArray(this.objProva.notas));
+            console.log(this.objProva.notas[0]);
+            
             this.AlunosArray.forEach(aluno => {
+                /*
+                const Nota = this.objProva.notas.find(
+                    prova => true
+                );
+                */
+                /*
+                for (var i=0; i < this.objProva.notas.length; i++) {
+                    if (this.objProva.notas[i].id_aluno === aluno.id) {
+
+                        thisnota = this.objProva.notas[i].nota
+                        console.log("thisnota -> "+thisnota);
+                    }
+                }
+                */
+                for (var fornota in this.objProva.notas) {
+                    console.log("fornota.id_aluno === aluno.id -> "+ (this.objProva.notas[fornota].id_aluno === aluno.id));
+                    console.log("fornota.id_aluno -> "+ (fornota.id_aluno));
+                    console.log("fornota -> "+ (this.objProva.notas[fornota].id_aluno));
+                    console.log("aluno.id -> "+ (aluno.id));
+                    
+                    if (this.objProva.notas[fornota].id_aluno === aluno.id) {
+
+                        thisnota = this.objProva.notas[fornota].nota;
+                        console.log("thisnota -> "+ fornota);
+                    }
+
+                }
+                //console.log("thisnota -> "+thisnota);
+                console.log("this.objProva.notas.length -> "+this.objProva.notas.length);
+               //console.log(Array.isArray(this.objProva.notas));
                 this.AlunosRef
                     .child(aluno.id)
                     .child("notas")
                     .child(prova_id)
                     .set({
-                        prova:this.objProva.nome,
-                        peso: this.objProva.peso,
-                        nota:7.644
+                        prova: this.objProva.nome,
+                        peso:  this.objProva.peso,
+                        //nota:  Object.assign({},objProva.notas)
+                        //nota:  this.objProva.nota
+                        nota:  thisnota
                     });
                 
             });
 
-            this.objProva.notas.forEach(nota => {
-                nota.nota=7.644;
-            });
+            //this.objProva.notas.forEach(nota => {
+            //    nota.nota=7.644;
+            //});
             this.ProvaRef.child(prova_id)
                 .update(this.objProva);
             console.log("depois update");    
             this.ResetObjProva();
+        },
+
+        AtribuirNota() {
+            //this.modalNota = Object.assign({},this.objProva.notas);
+            //this.modalNota = this.objProva.notas.slice(0);
+            this.modalNota = JSON.parse(JSON.stringify(this.objProva.notas));
+        },
+        EditarNota(nota){
+            this.editNota = nota;
+            this.novaNota = nota.nota;
+        },
+        UpdateNota() {
+            this.objProva.notas = Object.assign({},this.modalNota);
+
+            this.UpdateProva();
         },
 
 
