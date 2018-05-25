@@ -167,7 +167,7 @@ export default {
             'TurmaAtual'
         ])
     },
-     beforeUpdate: function() {
+    beforeUpdate: function() {
         // Jquery para o modal
         $(document).ready(function() {
         });
@@ -216,6 +216,8 @@ export default {
                 peso: "0",
                 notas:[]
             },
+
+            // Carregando Alunos
             AlunosRef: Database.ref("alunos").child(this.$store.getters.TurmaAtual.id),
             AlunosArray:[],
 
@@ -261,13 +263,13 @@ export default {
         },
         InserirProva() {
             
+            //Inserri Alunos com notas 0 no Objeto Prova
             this.AlunosArray.forEach(aluno => {
-                this.objProva.notas.push({
-                    id_aluno: aluno.id,
+                this.objProva.notas[aluno.id] = {
                     codigo:aluno.codigo,
                     nome_aluno: aluno.nome,
-                    nota: 1.566666
-                });
+                    nota: 0
+                };
             });
 
             delete this.objProva.id;
@@ -281,7 +283,7 @@ export default {
                     .set({
                         prova:this.objProva.nome,
                         peso: this.objProva.peso,
-                        nota:1.5666
+                        nota:0
                     });
              });
 
@@ -303,44 +305,19 @@ export default {
         },
         UpdateProva() {
             console.log("antes update");
+
             var thisnota = 0;
             var prova_id = this.objProva.id;
             delete this.objProva.id;
-            //this.objProva.notas=[];
-            console.log(Array.isArray(this.objProva.notas));
-            console.log(this.objProva.notas[0]);
             
             this.AlunosArray.forEach(aluno => {
-                /*
-                const Nota = this.objProva.notas.find(
-                    prova => true
-                );
-                */
-                /*
-                for (var i=0; i < this.objProva.notas.length; i++) {
-                    if (this.objProva.notas[i].id_aluno === aluno.id) {
-
-                        thisnota = this.objProva.notas[i].nota
-                        console.log("thisnota -> "+thisnota);
-                    }
-                }
-                */
                 for (var fornota in this.objProva.notas) {
-                    console.log("fornota.id_aluno === aluno.id -> "+ (this.objProva.notas[fornota].id_aluno === aluno.id));
-                    console.log("fornota.id_aluno -> "+ (fornota.id_aluno));
-                    console.log("fornota -> "+ (this.objProva.notas[fornota].id_aluno));
-                    console.log("aluno.id -> "+ (aluno.id));
-                    
-                    if (this.objProva.notas[fornota].id_aluno === aluno.id) {
-
+                    if (fornota === aluno.id) {
                         thisnota = this.objProva.notas[fornota].nota;
-                        console.log("thisnota -> "+ fornota);
+                        break;
                     }
-
                 }
-                //console.log("thisnota -> "+thisnota);
-                console.log("this.objProva.notas.length -> "+this.objProva.notas.length);
-               //console.log(Array.isArray(this.objProva.notas));
+
                 this.AlunosRef
                     .child(aluno.id)
                     .child("notas")
@@ -348,25 +325,19 @@ export default {
                     .set({
                         prova: this.objProva.nome,
                         peso:  this.objProva.peso,
-                        //nota:  Object.assign({},objProva.notas)
-                        //nota:  this.objProva.nota
                         nota:  thisnota
                     });
                 
             });
 
-            //this.objProva.notas.forEach(nota => {
-            //    nota.nota=7.644;
-            //});
             this.ProvaRef.child(prova_id)
                 .update(this.objProva);
+
             console.log("depois update");    
             this.ResetObjProva();
         },
 
         AtribuirNota() {
-            //this.modalNota = Object.assign({},this.objProva.notas);
-            //this.modalNota = this.objProva.notas.slice(0);
             this.modalNota = JSON.parse(JSON.stringify(this.objProva.notas));
         },
         EditarNota(nota){
@@ -378,7 +349,6 @@ export default {
 
             this.UpdateProva();
         },
-
 
         SortByDate() {
             this.ProvaArray.sort(function(a, b) {

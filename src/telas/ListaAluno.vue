@@ -31,8 +31,8 @@
                     <td>{{aluno.codigo}}</td>
                     <td>{{aluno.nome}}</td>
                     <td class="left">
-                        <a class="btn-floating  btn-small modal-trigger disabled" href="#!" ><i class="material-icons">assignment_turned_in</i></a>
-                        <a class="btn-floating  btn-small modal-trigger tooltipped" data-position="bottom"  @click="EditarAluno(aluno)" data-tooltip="NOTAS" href="#modal2" ><i class="material-icons">exposure_plus_1</i></a>
+                        <a class="btn-floating  btn-small modal-trigger disabled" href="#!" @click=""><i class="material-icons">assignment_turned_in</i></a>
+                        <a class="btn-floating  btn-small modal-trigger tooltipped" data-position="bottom"  @click="EditarAluno(aluno); AtribuirNota()" data-tooltip="NOTAS" href="#modal2" ><i class="material-icons">exposure_plus_1</i></a>
                         <a class="btn-floating  btn-small modal-trigger" href="#modal1" @click="EditarAluno(aluno)"><i class="material-icons">edit</i></a>
                         <a class="btn-floating  btn-small modal-trigger" href="#!" @click="ExcluirAluno(aluno)"><i class="material-icons">delete</i></a>
                         
@@ -78,14 +78,30 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr v-for="prova in objAluno.notas">
+                            <tr v-for="prova in modalNota">
                                 <td>{{prova.prova}}</td>
                                 <td>{{prova.peso}}0%</td>
-                                <td>{{prova.nota | formatNota}}</td>
+                                <td>
+                                    
+                                    <div v-if="(prova !== editNota)">
+                                        {{prova.nota | formatNota}} 
+                                        <a class="btn-floating  btn-small"  href="#!" @click="EditarNota(prova)"><i class="material-icons">edit</i></a>
+                                    </div>
+                                    <div v-else class="row">
+                                        <input id="icon_prefix" v-model="novaNota" type="text" class="validate col s2">
+                                        <a class="btn-floating  btn-small" href="#!" @click="prova.nota=Number(novaNota);editNota=null;"><i class="material-icons">done</i></a>
+                                        <a class="btn-floating  btn-small" href="#!" @click="editNota=null"><i class="material-icons">clear</i></a>
+                                    </div>
+                                    
+                                </td>
                             </tr>
                         </tbody>
                     </table>
                 </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn modal-action modal-close red" @click="modalNota=null;">CANCELAR</button>
+                <button class="btn modal-action modal-close green" @click="UpdateNota()">EDITAR</button>
             </div>
         </div>
         
@@ -123,6 +139,16 @@ export default {
             });
             //console.log($(".collapsible").collapsible());
         });
+
+        // PopularAray de provas com a referencia
+         Database.ref("provas/"+this.$store.getters.TurmaAtual.id).on('child_added', snapshot => {
+             this.ProvasArray.push({
+                 id: snapshot.key,
+                 prova: snapshot.val().nome,
+                 peso: snapshot.val().peso
+                 //nota: snapshot.val().nota
+             })
+         })
     },
     data () {
         return {
@@ -138,12 +164,20 @@ export default {
             objAluno:{
                 id:'',
                 codigo:'',
-                nome:''
+                nome:'',
+                notas: []
             },
             EditingAluno: null,
 
-            alunosCountLocal:this.$store.getters.TurmaAtual.alunosCount
+            // Carregando Provas
+            ProvasRef: Database.ref("provas").child(this.$store.getters.TurmaAtual.id),
+            ProvasArray:[],
 
+            modalNota: null,
+            editNota: null,
+            novaNota:0,
+
+            alunosCountLocal:this.$store.getters.TurmaAtual.alunosCount
         }
     },
     filters:{
@@ -167,7 +201,8 @@ export default {
             this.objAluno={
                 id:'',
                 codigo:'',
-                nome:''
+                nome:'',
+                notas:[]
             };
             this.media=0
         },
@@ -175,9 +210,31 @@ export default {
             console.log("Inserir Aluno");
             //console.log(this.objAluno);
             
+            // Inserir Provas com notas 0 no Objeto Aluno
+            this.ProvasArray.forEach(prova => {
+                this.objAluno.notas[prova.id] = {
+                    prova: prova.prova,
+                    peso: prova.peso,
+                    nota: 0
+                }
+            });
+
             delete this.objAluno.id;
-            this.AlunosRef.push(this.objAluno);
+            var aluno_id = this.AlunosRef.push(this.objAluno).key;
             
+            this.ProvasArray.forEach(prova => {
+                this.ProvasRef
+                    .child(prova.id)
+                    .child("notas")
+                    .child(aluno_id)
+                    .set({
+                        codigo: this.objAluno.codigo,
+                        nome_aluno:  this.objAluno.nome,
+                        nota: 0
+                    });
+            });
+
+
             this.ResetObjAluno();
             console.log("inserido com sucesso");
 
@@ -187,6 +244,14 @@ export default {
             this.alunosCountLocal++;
         },
         ExcluirAluno(aluno) {
+
+            this.ProvasArray.forEach(prova => {
+                this.ProvasRef
+                    .child(prova.id)
+                    .child("notas")
+                    .child(aluno.id).remove()
+            });
+
             Database.ref("turmas/"+ this.$store.getters.TurmaAtual.id).child("alunosCount").set(
                 this.alunosCountLocal - 1
             );
@@ -215,15 +280,34 @@ export default {
         },
         UpdateAluno(){
             console.log("Update Aluno");
+
+
             var id = this.objAluno.id;
             delete this.objAluno.id;
+
+            this.ProvasArray.forEach({
+                
+            });
+
+
             //console.log(this.objAluno);
             this.AlunosRef.child(id)
-            .update(this.objAluno);
+                .update(this.objAluno);
             
             this.ResetObjAluno();
-            
-            
+        },
+
+        AtribuirNota() {
+            this.modalNota = JSON.parse(JSON.stringify(this.objAluno.notas));
+        },
+        EditarNota(nota) {
+            this.editNota = nota;
+            this.novaNota = nota.nota;
+        },
+        UpdateNota() {
+            this.objAluno.notas = Object.assign({},this.modalNota);
+
+            this.UpdateAluno();
         },
 
         //metodos para sortear a tabela
