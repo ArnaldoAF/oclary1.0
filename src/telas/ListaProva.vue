@@ -53,7 +53,7 @@
         </table>
 
         <div class="fixed-action-btn">
-            <a class="btn-floating btn-large  red modal-trigger" href="#modal1"> <i class="large material-icons">add</i></a>
+            <a class="btn-floating btn-large  red modal-trigger" href="#modal1" @click="ResetObjProva()"> <i class="large material-icons">add</i></a>
         </div>
 
         <div id="modal1" class="modal">
@@ -421,9 +421,6 @@ export default {
             this.SortByDate(); 
             
         });
-
-         
-        
     }
 }
 </script>

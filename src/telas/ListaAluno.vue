@@ -44,7 +44,7 @@
         </table>
 
         <div class="fixed-action-btn">
-            <a class="btn-floating btn-large red modal-trigger" href="#modal1"> <i class="large material-icons">add</i></a>
+            <a class="btn-floating btn-large red modal-trigger" href="#modal1" @click="ResetObjAluno()"> <i class="large material-icons">add</i></a>
         </div>
 
         <div id="modal1" class="modal">
@@ -89,7 +89,7 @@
                                     </div>
                                     <div v-else class="row">
                                         <input id="icon_prefix" v-model="novaNota" type="text" class="validate col s2">
-                                        <a class="btn-floating  btn-small" href="#!" @click="prova.nota=Number(novaNota);editNota=null;"><i class="material-icons">done</i></a>
+                                        <a class="btn-floating  btn-small" href="#!" @click="prova.nota=Number(novaNota);editNota=null;CalcularMedia();"><i class="material-icons">done</i></a>
                                         <a class="btn-floating  btn-small" href="#!" @click="editNota=null"><i class="material-icons">clear</i></a>
                                     </div>
                                     
@@ -260,15 +260,12 @@ export default {
             
         },
         EditarAluno(aluno) {
-            this.media=0;
+            //this.media=0;
             this.objAluno = Object.assign({},aluno);
             console.log(this.objAluno.nome);
             //console.log(this.media);
             
-            for(var prova in this.objAluno.notas) {
-                this.media+=this.objAluno.notas[prova].nota*(this.objAluno.notas[prova].peso/10);
-                
-            }
+            this.CalcularMedia();
             console.log(this.media);
 
             //this.objAluno.notas.forEach(nota => {
@@ -281,12 +278,27 @@ export default {
         UpdateAluno(){
             console.log("Update Aluno");
 
-
+            var thisNota = 0;
             var id = this.objAluno.id;
             delete this.objAluno.id;
 
-            this.ProvasArray.forEach({
-                
+            this.ProvasArray.forEach(prova => {
+                for (var fornota in this.objAluno.notas) {
+                    if(fornota === prova.id) {
+                        thisNota = this.objAluno.notas[fornota].nota;
+                        break;
+                    }
+                }
+
+                this.ProvasRef
+                    .child(prova.id)
+                    .child("notas")
+                    .child(id)
+                    .set({
+                        codigo: this.objAluno.codigo,
+                        nome_aluno:  this.objAluno.nome,
+                        nota: thisNota
+                    });
             });
 
 
@@ -299,15 +311,25 @@ export default {
 
         AtribuirNota() {
             this.modalNota = JSON.parse(JSON.stringify(this.objAluno.notas));
+            this.CalcularMedia();
         },
         EditarNota(nota) {
             this.editNota = nota;
             this.novaNota = nota.nota;
+            this.CalcularMedia();
         },
         UpdateNota() {
             this.objAluno.notas = Object.assign({},this.modalNota);
 
             this.UpdateAluno();
+        },
+
+        CalcularMedia(){
+            this.media=0;
+            for (var nota in this.modalNota) {
+                this.media += this.modalNota[nota].nota * (this.modalNota[nota].peso / 10);
+            }
+            console.log("Calcular Media -> "+ this.media);
         },
 
         //metodos para sortear a tabela
@@ -367,6 +389,7 @@ export default {
             AlunoEditado.id = snapshot.key;
             AlunoEditado.nome = snapshot.val().nome;
             AlunoEditado.codigo = snapshot.val().codigo;
+            AlunoEditado.notas = snapshot.val().notas;
             //AlunoEditado=Object.assign({},snapshot.val());
             this.codeOrdem=true;
             //this.SortByCode();
