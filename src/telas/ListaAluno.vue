@@ -10,7 +10,8 @@
             </div>
         </div>
 
-        <table class="highlight">
+        <div class="responsive-table table-status-sheet">
+        <table id="tabelaNotas" class="highlight">
             <thead>
                 <tr>
                     <th class="" @click="codeOrdem=!codeOrdem">
@@ -31,7 +32,7 @@
                     <td>{{aluno.codigo}}</td>
                     <td>{{aluno.nome}}</td>
                     <td class="left">
-                        <a class="btn-floating  btn-small modal-trigger disabled" href="#!" @click=""><i class="material-icons">assignment_turned_in</i></a>
+                        <a class="btn-floating  btn-small modal-trigger " href="#modal3" @click="EditarAluno(aluno); AtribuirPresenca();"><i class="material-icons">assignment_turned_in</i></a>
                         <a class="btn-floating  btn-small modal-trigger tooltipped" data-position="bottom"  @click="EditarAluno(aluno); AtribuirNota()" data-tooltip="NOTAS" href="#modal2" ><i class="material-icons">exposure_plus_1</i></a>
                         <a class="btn-floating  btn-small modal-trigger" href="#modal1" @click="EditarAluno(aluno)"><i class="material-icons">edit</i></a>
                         <a class="btn-floating  btn-small modal-trigger" href="#!" @click="ExcluirAluno(aluno)"><i class="material-icons">delete</i></a>
@@ -42,6 +43,7 @@
                 </tr>
             </tbody>
         </table>
+        </div>
 
         <div class="fixed-action-btn">
             <a class="btn-floating btn-large red modal-trigger" href="#modal1" @click="ResetObjAluno()"> <i class="large material-icons">add</i></a>
@@ -104,6 +106,40 @@
                 <button class="btn modal-action modal-close green" @click="UpdateNota()">EDITAR</button>
             </div>
         </div>
+
+        <div id="modal3" class="modal">
+            <div>
+                <div class="modal-content">
+                    <h3>Porcentagem: {{porcetagemPre | formatNota}}% </h3>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Dia</th>
+                                <th>Presença</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="presenca in modalPresenca">
+                                <td>{{presenca.data | formatDate}}</td>
+                                <td>
+                                    <label>
+                                        <input type="checkbox" v-model="presenca.presenca"  class="filled-in"/>
+                                        <span></span>
+                                    </label>
+                                </td>
+
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn modal-action modal-close red" @click="modalPresenca=null">CANCELAR</button>
+                <button class="btn modal-action modal-close green" @click="UpdatePresenca()">EDITAR</button>
+            </div>
+        </div>
+
+
         
 
     </div>
@@ -148,7 +184,17 @@ export default {
                  peso: snapshot.val().peso
                  //nota: snapshot.val().nota
              })
-         })
+         });
+
+         Database.ref("presenca").child(this.$store.getters.TurmaAtual.id).on('child_added', snapshot => {
+            this.PresencaArray.push({...snapshot.val(), id:snapshot.key});
+            this.PresencaArray.sort(function(a, b) {
+                if (a.data > b.data) return 1;
+                if (a.data < b.data) return -1;
+                return 0;
+            });
+            
+        });
     },
     data () {
         return {
@@ -158,6 +204,7 @@ export default {
             nomeOrdem: true,
 
             media:0,
+            porcetagemPre:0,
 
             AlunosRef:Database.ref("alunos/"+this.$store.getters.TurmaAtual.id),
             AlunosArray:[],
@@ -165,7 +212,8 @@ export default {
                 id:'',
                 codigo:'',
                 nome:'',
-                notas: []
+                notas: [],
+                presencas: []
             },
             EditingAluno: null,
 
@@ -177,10 +225,21 @@ export default {
             editNota: null,
             novaNota:0,
 
+            PresencaRef: Database.ref("presenca").child(this.$store.getters.TurmaAtual.id),
+            PresencaArray:[],
+            
+            
+            modalPresenca: null,
+
             alunosCountLocal:this.$store.getters.TurmaAtual.alunosCount
         }
     },
     filters:{
+        formatDate: function(value) {
+            if (value) {
+                return moment(String(value)).format('DD/MM');
+            }
+        },
         formatNota: function(val){
             //var number = +val.replace(/[^\d.]/g, '');
             return isNaN(val) ? 0 : parseFloat(val.toFixed(2));
@@ -202,7 +261,8 @@ export default {
                 id:'',
                 codigo:'',
                 nome:'',
-                notas:[]
+                notas:[],
+                presencas:[]
             };
             this.media=0
         },
@@ -219,6 +279,13 @@ export default {
                 }
             });
 
+            this.PresencaArray.forEach(presenca => {
+                this.objAluno.presencas[presenca.id] = {
+                    data: presenca.data,
+                    presenca: false
+                }
+            })
+
             delete this.objAluno.id;
             var aluno_id = this.AlunosRef.push(this.objAluno).key;
             
@@ -232,6 +299,18 @@ export default {
                         nome_aluno:  this.objAluno.nome,
                         nota: 0
                     });
+            });
+
+            this.PresencaArray.forEach(presenca => {
+                this.PresencaRef
+                    .child(presenca.id)
+                    .child("presencas")
+                    .child(aluno_id)
+                    .set({
+                        codigo: this.objAluno.codigo,
+                        nome_aluno:  this.objAluno.nome,
+                        presenca: false
+                    })
             });
 
 
@@ -252,6 +331,14 @@ export default {
                     .child(aluno.id).remove()
             });
 
+            this.PresencaArray.forEach(presenca => {
+                this.PresencaRef
+                    .child(presenca.id)
+                    .child("notas")
+                    .child(aluno.id).remove()
+            });
+
+
             Database.ref("turmas/"+ this.$store.getters.TurmaAtual.id).child("alunosCount").set(
                 this.alunosCountLocal - 1
             );
@@ -266,6 +353,7 @@ export default {
             //console.log(this.media);
             
             this.CalcularMedia();
+            this.CalcularPresenca();
             console.log(this.media);
 
             //this.objAluno.notas.forEach(nota => {
@@ -301,6 +389,18 @@ export default {
                     });
             });
 
+            this.PresencaArray.forEach(presenca => {
+                this.PresencaRef
+                    .child(presenca.id)
+                    .child("presencas")
+                    .child(id)
+                    .set({
+                        codigo: this.objAluno.codigo,
+                        nome_aluno:  this.objAluno.nome,
+                        presenca: false
+                    })
+            });
+
 
             //console.log(this.objAluno);
             this.AlunosRef.child(id)
@@ -320,7 +420,15 @@ export default {
         },
         UpdateNota() {
             this.objAluno.notas = Object.assign({},this.modalNota);
+            this.UpdateAluno();
+        },
 
+        AtribuirPresenca() {
+            this.modalPresenca = JSON.parse(JSON.stringify(this.objAluno.presencas));
+            this.CalcularPresenca();
+        },
+        UpdatePresenca(){
+            this.objAluno.presencas = Object.assign({},this.modalPresenca);
             this.UpdateAluno();
         },
 
@@ -330,6 +438,17 @@ export default {
                 this.media += this.modalNota[nota].nota * (this.modalNota[nota].peso / 10);
             }
             console.log("Calcular Media -> "+ this.media);
+        },
+        CalcularPresenca() {
+            this.porcetagemPre=0;
+            var numPre=0;
+            var total=0;
+            for (var presenca in this.modalPresenca) {
+                if (this.modalPresenca[presenca].presenca==true) numPre++;
+                total++;
+            }
+            this.porcetagemPre=((numPre*100)/total);
+            
         },
 
         //metodos para sortear a tabela
@@ -390,6 +509,7 @@ export default {
             AlunoEditado.nome = snapshot.val().nome;
             AlunoEditado.codigo = snapshot.val().codigo;
             AlunoEditado.notas = snapshot.val().notas;
+            AlunoEditado.presencas = snapshot.val().presencas
             //AlunoEditado=Object.assign({},snapshot.val());
             this.codeOrdem=true;
             //this.SortByCode();
@@ -399,3 +519,6 @@ export default {
     }
 }
 </script>
+<style>
+
+</style>

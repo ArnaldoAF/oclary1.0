@@ -50,6 +50,24 @@ export default {
 </script>
 
 <style lang="scss">
+
+tbody {
+    display:block;
+    max-height:320px;
+    overflow:auto;
+}
+thead, tbody tr {
+    display:table;
+    width:100%;
+    table-layout:fixed;
+}
+thead {
+    width: calc( 100% - 1em )
+}
+table {
+    width:100%;
+}
+
 .content {
       padding-left: 300px;
     }

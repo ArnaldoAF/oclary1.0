@@ -38,7 +38,8 @@
             </div>
         </div>
 
-        <table class="highlight">
+        <div class="responsive-table table-status-sheet">
+        <table class="highlight" id="tabelaNotas">
             <thead>
                 <tr >
                     <th>Data</th>
@@ -70,6 +71,7 @@
                 </tr>
             </tbody>
         </table>
+        </div>
 
         <div class="fixed-action-btn">
             <a class="btn-floating btn-large red modal-trigger" href="#modal1"> <i class="large material-icons">add</i></a>
