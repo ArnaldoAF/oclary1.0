@@ -62,7 +62,7 @@
                         <a class="btn-floating  btn-small modal-trigger" href="#!" @click="ExcluirPlanejamento(planejamento)"><i class="material-icons">delete</i></a>
                         <a class="btn-floating  btn-small modal-trigger" href="#!" @click="planejamento.aplicado=!planejamento.aplicado; EditarPlanejamento(planejamento); UpdatePlanejamento(); ">
                             <i v-if="!planejamento.aplicado" class="material-icons ">check</i>
-                        <i v-else class="material-icons ">clear</i>
+                            <i v-else class="material-icons ">clear</i>
                         </a>
                         
                     </td>
@@ -118,6 +118,11 @@ export default {
         ...mapGetters([
             'TurmaAtual'
         ])
+    },
+    beforeCreate() {
+        if (this.$store.getters.TurmaAtual==null){  
+            this.$store.commit("TurmaAtual",{id: this.$route.params.id });
+        }
     },
      beforeUpdate: function() {
         // Jquery para o modal
@@ -245,6 +250,13 @@ export default {
         }
     },
     created() {
+        if (this.$store.getters.TurmaAtual.nome==null){  
+            var a = this.$route.params.id;
+            Database.ref("turmas").child(a).once("value", snapshot => {    
+                this.$store.commit("TurmaAtual",{...snapshot.val(), id: snapshot.key });
+            });   
+        } 
+        
         this.PlanejamentoRef.on("value", snapshot => {
             this.loading = false;
             

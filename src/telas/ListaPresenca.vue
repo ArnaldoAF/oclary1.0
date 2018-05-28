@@ -104,6 +104,11 @@ export default {
             'TurmaAtual'
         ])
     },
+    beforeCreate() {
+        if (this.$store.getters.TurmaAtual==null){  
+            this.$store.commit("TurmaAtual",{id: this.$route.params.id });
+        }
+    },
     beforeUpdate: function() {
         // Jquery para o modal
         $(document).ready(function() {
@@ -254,6 +259,12 @@ export default {
         }
     },
     created() {
+        if (this.$store.getters.TurmaAtual.nome==null){  
+            var a = this.$route.params.id;
+            Database.ref("turmas").child(a).once("value", snapshot => {    
+                this.$store.commit("TurmaAtual",{...snapshot.val(), id: snapshot.key });
+            });   
+        }
         this.PresencaRef.on("value", snapshot => {
             this.loading = false;
         });

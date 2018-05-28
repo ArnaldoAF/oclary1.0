@@ -157,6 +157,11 @@ export default {
             'TurmaAtual'
         ])
     },
+    beforeCreate() {
+        if (this.$store.getters.TurmaAtual==null){  
+            this.$store.commit("TurmaAtual",{id: this.$route.params.id });
+        }
+    },
     
     beforeUpdate: function() {
         // Jquery para o modal
@@ -477,6 +482,24 @@ export default {
         }
     },
     created() {
+        if (this.$store.getters.TurmaAtual.nome==null){  
+            console.log("Turma atual is null = " + (this.$store.getters.TurmaAtual==null));
+            console.log("id params = " + (this.$route.params.id));
+            console.log(Database.ref("turmas").child(this.$route.params.id));
+            var a = this.$route.params.id;
+            //Database.ref("turmas").orderByKey().equalTo(this.$route.params.id).on("child_added", snapshot => {
+            Database.ref("turmas").child(a).once("value", snapshot => {
+                
+                console.log("dewntro - Turma atual is null = " + (this.$store.getters.TurmaAtual==null));
+                this.$store.commit("TurmaAtual",{...snapshot.val(), id: snapshot.key });
+                console.log("Turma atual is null = " + (this.$store.getters.TurmaAtual==null));
+            }, context => {
+                console.log("fail");
+            });   
+            console.log("final - Turma atual is null = " + (this.$store.getters.TurmaAtual==null));
+        }
+        
+
         this.AlunosRef.on("value", snapshot => {
             this.loading = false;
             

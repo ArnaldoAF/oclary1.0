@@ -65,7 +65,7 @@
                 </div>
                 
                 <div class="input-field col s4">
-                    <textarea id="conteudo" placeholder="NOME"  v-model="objProva.nome" autofocus required class="validate active materialize-textarea"></textarea>
+                    <textarea id="nome" placeholder="NOME"  v-model="objProva.nome" autofocus required class="validate active materialize-textarea"></textarea>
                     <label class="active" for="conteudo">Nome</label>
                 </div>
 
@@ -167,6 +167,11 @@ export default {
             'TurmaAtual'
         ])
     },
+    beforeCreate() {
+        if (this.$store.getters.TurmaAtual==null){  
+            this.$store.commit("TurmaAtual",{id: this.$route.params.id });
+        }
+    },
     beforeUpdate: function() {
         // Jquery para o modal
         $(document).ready(function() {
@@ -177,10 +182,12 @@ export default {
     mounted: function() {
         // Jquery para o modal
         $(document).ready(function() {
-            
+            M.AutoInit();
             $(".modal").modal();
             $('select').formSelect();
             $('.datepicker').pickadate();
+            $('#conteudo').characterCounter();
+            M.textareaAutoResize($('#conteudo'));
             $(document).on("shown.bs.modal", function(e) {
                 $("[autofocus]", e.target).focus();
             });
@@ -262,7 +269,7 @@ export default {
             }
         },
         InserirProva() {
-            
+            M.textareaAutoResize($('#conteudo'));
             //Inserri Alunos com notas 0 no Objeto Prova
             this.AlunosArray.forEach(aluno => {
                 this.objProva.notas[aluno.id] = {
@@ -299,9 +306,13 @@ export default {
             this.ProvaRef.child(prova.id).remove();
         },
         EditarProva(prova) {
+             
+            
             this.objProva = Object.assign({},prova);
             $('#selectPeso').val(this.objProva.peso);
             $('#selectPeso').formSelect();
+            $('#conteudo').val(this.objProva.conteudo);
+            M.textareaAutoResize($('#conteudo'));
         },
         UpdateProva() {
             console.log("antes update");
@@ -388,6 +399,12 @@ export default {
         }
     },
     created(){
+        if (this.$store.getters.TurmaAtual.nome==null){  
+            var a = this.$route.params.id;
+            Database.ref("turmas").child(a).once("value", snapshot => {    
+                this.$store.commit("TurmaAtual",{...snapshot.val(), id: snapshot.key });
+            });   
+        }
         this.ProvaRef.on("value", snapshot => {
             this.loading = false;
         });
@@ -414,6 +431,7 @@ export default {
 
             Prova.id = snapshot.key;
             Prova.data = snapshot.val().data;
+            Prova.conteudo = snapshot.val().conteudo;
             Prova.nome = snapshot.val().nome;
             Prova.peso = snapshot.val().peso;
             Prova.notas = snapshot.val().notas;
