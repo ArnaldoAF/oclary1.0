@@ -162,7 +162,7 @@ export default {
                 id:'',
                 data:'',
                 conteudo:'',
-                aplicado:true
+                aplicado:false
             }
         }
     },

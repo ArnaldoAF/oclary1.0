@@ -375,6 +375,8 @@ export default {
             var id = this.objAluno.id;
             delete this.objAluno.id;
 
+            var thisPresenca = 0;
+
             this.ProvasArray.forEach(prova => {
                 for (var fornota in this.objAluno.notas) {
                     if(fornota === prova.id) {
@@ -395,6 +397,14 @@ export default {
             });
 
             this.PresencaArray.forEach(presenca => {
+                for(var forpresenca in this.objAluno.presencas) {
+                    if(forpresenca === presenca.id){
+                        thisPresenca = this.objAluno.presencas[forpresenca].presenca;
+                        break;
+                    }
+                }
+
+
                 this.PresencaRef
                     .child(presenca.id)
                     .child("presencas")
@@ -402,7 +412,7 @@ export default {
                     .set({
                         codigo: this.objAluno.codigo,
                         nome_aluno:  this.objAluno.nome,
-                        presenca: false
+                        presenca: thisPresenca
                     })
             });
 
@@ -483,20 +493,10 @@ export default {
     },
     created() {
         if (this.$store.getters.TurmaAtual.nome==null){  
-            console.log("Turma atual is null = " + (this.$store.getters.TurmaAtual==null));
-            console.log("id params = " + (this.$route.params.id));
-            console.log(Database.ref("turmas").child(this.$route.params.id));
             var a = this.$route.params.id;
-            //Database.ref("turmas").orderByKey().equalTo(this.$route.params.id).on("child_added", snapshot => {
-            Database.ref("turmas").child(a).once("value", snapshot => {
-                
-                console.log("dewntro - Turma atual is null = " + (this.$store.getters.TurmaAtual==null));
+            Database.ref("turmas").child(a).once("value", snapshot => {    
                 this.$store.commit("TurmaAtual",{...snapshot.val(), id: snapshot.key });
-                console.log("Turma atual is null = " + (this.$store.getters.TurmaAtual==null));
-            }, context => {
-                console.log("fail");
             });   
-            console.log("final - Turma atual is null = " + (this.$store.getters.TurmaAtual==null));
         }
         
 
