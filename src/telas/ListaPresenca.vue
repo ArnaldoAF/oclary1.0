@@ -1,93 +1,100 @@
 <template>
     <div>
-        Presença
-
-        <div class="row">
-            
-            <div class="input-field col s3">
-                <select v-model="filtroMes">
-                    <option value="0">Todos</option>
-                    <option value="01">Janeiro</option>
-                    <option value="02">Fevereiro</option>
-                    <option value="03">Março</option>
-                    <option value="04">Abril</option>
-                    <option value="05">Maio</option>
-                    <option value="06">Junho</option>
-                    <option value="07">Julho</option>
-                    <option value="08">Agosto</option>
-                    <option value="09">Setembro</option>
-                    <option value="10">Outubro</option>
-                    <option value="11">Novembro</option>
-                    <option value="12">Dezembro</option>
-                </select>
-                <label>Por Mês</label>
-            </div>
+        
+        <div v-if="loading" class="progress center blue">
+            <div class="indeterminate"></div>
         </div>
+        <div v-else>
 
-        <div class="responsive-table table-status-sheet">
-        <table id="tabelaNotas" class="highlight">
-            <thead>
-                <tr>
-                    <th>Data</th>
-                    <th>Presença</th>
-                    <th>Ações</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr v-for="presenca in PresencaArray" v-if="(FiltroPorMes(presenca))">
-                    <td>{{presenca.data | formatDate}}</td>
-                    <td><a class="btn-small modal-trigger" href="#modal1" @click="EditarPresenca(presenca)">PRESENÇAS</a></td>
-                    <td class="left">
-                        <a class="btn-floating  btn-small modal-trigger" href="#" @click="ExcluirPresenca(presenca)"><i class="material-icons">delete</i></a>
-                        
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-        </div>
-
-        <div class="fixed-action-btn">
-            <a class="btn-floating btn-large  red modal-trigger" href="#modal1" @click="ResetObjPresenca()"> <i class="large material-icons">add</i></a>
-        </div>
-
-        <div id="modal1" class="modal">
-            <div class="modal-content row">
-
-                <div class="input-field col s4">
-                    <input id="data" placeholder="DATA" type="date" v-model="objPresenca.data"  autofocus required class="datepicker active">
-                    <label class="active" for="data">DATA</label>
-                </div>
-
-                <div class="responsive-table table-status-sheet"> 
-                    <table id="tabelaPresenca">
-                        <thead>
-                            <tr>
-                                <th>Codigo</th>
-                                <th>Aluno</th>
-                                <th>Presença</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr v-for="presenca in objPresenca.presencas">
-                                <td>{{presenca.codigo}}</td>
-                                <td>{{presenca.nome_aluno}}</td>
-                                <td>
-                                    <label>
-                                        <input type="checkbox" v-model="presenca.presenca" class="filled-in"/>
-                                        <span></span>
-                                    </label>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+            <div class="row">
+                
+                <div class="input-field col s3">
+                    <select v-model="filtroMes">
+                        <option value="0">Todos</option>
+                        <option value="01">Janeiro</option>
+                        <option value="02">Fevereiro</option>
+                        <option value="03">Março</option>
+                        <option value="04">Abril</option>
+                        <option value="05">Maio</option>
+                        <option value="06">Junho</option>
+                        <option value="07">Julho</option>
+                        <option value="08">Agosto</option>
+                        <option value="09">Setembro</option>
+                        <option value="10">Outubro</option>
+                        <option value="11">Novembro</option>
+                        <option value="12">Dezembro</option>
+                    </select>
+                    <label>Por Mês</label>
                 </div>
             </div>
-            <div class="modal-footer">
-                <button class="btn modal-action modal-close red" @click="ResetObjPresenca()">CANCELAR</button>
-                <button class="btn modal-action modal-close green" v-if="objPresenca.id===''" @click="InserirPresenca()">INCLUIR</button>
-                <button class="btn modal-action modal-close green"  v-else @click="UpdatePresenca()">EDITAR</button>
+
+            <div class="responsive-table table-status-sheet">
+                <table id="tabelaNotas" class="highlight">
+                    <thead>
+                        <tr>
+                            <th>Data</th>
+                            <th>Presença</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="presenca in PresencaArray" v-if="(FiltroPorMes(presenca))">
+                            <td>{{presenca.data | formatDate}}</td>
+                            <td><a class="btn-small modal-trigger" href="#modal1" @click="EditarPresenca(presenca)">PRESENÇAS</a></td>
+                            <td class="left">
+                                <a class="btn-floating  btn-small modal-trigger" href="#" @click="ExcluirPresenca(presenca)"><i class="material-icons">delete</i></a>
+                                
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
+
+            <div class="fixed-action-btn">
+                <a class="btn-floating btn-large  red modal-trigger" href="#modal1" @click="ResetObjPresenca()"> <i class="large material-icons">add</i></a>
+            </div>
+
+            <div id="modal1" class="modal">
+                <div class="modal-content row">
+
+                    <div class="input-field col s4">
+                        <input id="data" placeholder="DATA" type="date" v-model="objPresenca.data"  autofocus required class="datepicker active">
+                        <label class="active" for="data">DATA</label>
+                    </div>
+
+                    <div class="responsive-table table-status-sheet"> 
+                        <table id="tabelaPresenca">
+                            <thead>
+                                <tr>
+                                    <th>Codigo</th>
+                                    <th>Aluno</th>
+                                    <th>Presença</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="presenca in objPresenca.presencas">
+                                    <td>{{presenca.codigo}}</td>
+                                    <td>{{presenca.nome_aluno}}</td>
+                                    <td>
+                                        <label>
+                                            <input type="checkbox" v-model="presenca.presenca" class="filled-in"/>
+                                            <span></span>
+                                        </label>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn modal-action modal-close red" @click="ResetObjPresenca()">CANCELAR</button>
+                    <button class="btn modal-action modal-close green" v-if="objPresenca.id===''" @click="InserirPresenca()">INCLUIR</button>
+                    <button class="btn modal-action modal-close green"  v-else @click="UpdatePresenca()">EDITAR</button>
+                </div>
+            </div>
+
         </div>
+
 
     </div>
 </template>
@@ -105,6 +112,7 @@ export default {
         ])
     },
     beforeCreate() {
+        this.$store.commit("Setor","presenca");
         if (this.$store.getters.TurmaAtual==null){  
             this.$store.commit("TurmaAtual",{id: this.$route.params.id });
         }
@@ -112,6 +120,7 @@ export default {
     beforeUpdate: function() {
         // Jquery para o modal
         $(document).ready(function() {
+             $('select').formSelect();
         });
     },
     beforeMount: function() {
@@ -138,7 +147,7 @@ export default {
     },
     data() {
         return {
-            loading: false,
+            loading: true,
             pesquisa:'',
             filtroMes:0,
 

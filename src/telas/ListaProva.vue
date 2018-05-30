@@ -1,155 +1,161 @@
 <template>
     <div>
-        Provas
-
-        <div class="row">
-            <div class="input-field col s9">
-                <i class="material-icons prefix">search</i>
-                <input id="icon_prefix" type="text" class="validate" v-model="pesquisa">
-                <label for="icon_prefix">Prova</label>
-            </div>
-            <div class="input-field col s3">
-                <select v-model="filtroMes">
-                    <option value="0">Todos</option>
-                    <option value="01">Janeiro</option>
-                    <option value="02">Fevereiro</option>
-                    <option value="03">Março</option>
-                    <option value="04">Abril</option>
-                    <option value="05">Maio</option>
-                    <option value="06">Junho</option>
-                    <option value="07">Julho</option>
-                    <option value="08">Agosto</option>
-                    <option value="09">Setembro</option>
-                    <option value="10">Outubro</option>
-                    <option value="11">Novembro</option>
-                    <option value="12">Dezembro</option>
-                </select>
-                <label>Por Mês</label>
-            </div>
+        
+        <div v-if="loading" class="progress center blue">
+            <div class="indeterminate"></div>
         </div>
+        <div v-else>
 
-        <table class="highlight">
-            <thead>
-                <tr>
-                    <th>Data</th>
-                    <th>Nome</th>
-                    <th>Peso</th>
-                    <th>Ações</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr v-for="prova in ProvaArray" v-if="(FiltroPorMes(prova) && FiltroPorPesquisa(prova))">
-                    <td>{{prova.data | formatDate}}</td>
-                    <td>{{prova.nome}}</td>
-                    <td>{{prova.peso}}0%</td>
-                    <td class="left">
-                        <a class="btn-floating  btn-small modal-trigger" href="#modal2" @click="EditarProva(prova); AtribuirNota()"><i class="material-icons">exposure_plus_1</i></a>
-                        <a class="btn-floating  btn-small modal-trigger" href="#modal1" @click="EditarProva(prova)"><i class="material-icons">edit</i></a>
-                        <a class="btn-floating  btn-small modal-trigger" href="#!" @click="ExcluirProva(prova)"><i class="material-icons">delete</i></a>
-                        
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-
-        <div class="fixed-action-btn">
-            <a class="btn-floating btn-large  red modal-trigger" href="#modal1" @click="ResetObjProva()"> <i class="large material-icons">add</i></a>
-        </div>
-
-        <div id="modal1" class="modal">
-            <div class="modal-content row">
-
-                <div class="input-field col s4">
-                    <input id="data" placeholder="DATA" type="date"  v-model="objProva.data" autofocus required class="datepicker active">
-                    <label class="active" for="data">DATA</label>
+            <div class="row">
+                <div class="input-field col s9">
+                    <i class="material-icons prefix">search</i>
+                    <input id="icon_prefix" type="text" class="validate" v-model="pesquisa">
+                    <label for="icon_prefix">Prova</label>
                 </div>
-                
-                <div class="input-field col s4">
-                    <textarea id="nome" placeholder="NOME"  v-model="objProva.nome" autofocus required class="validate active materialize-textarea"></textarea>
-                    <label class="active" for="conteudo">Nome</label>
-                </div>
-
-                <div class="input-field col s4">
-                    <select id="selectPeso" v-model="objProva.peso">
-                    <option value="0">0%</option>
-                    <option value="1">10%</option>
-                    <option value="2">20%</option>
-                    <option value="3">30%</option>
-                    <option value="4">40%</option>
-                    <option value="5">50%</option>
-                    <option value="6">60%</option>
-                    <option value="7">70%</option>
-                    <option value="8">80%</option>
-                    <option value="9">90%</option>
-                    <option value="10">100%</option>
+                <div class="input-field col s3">
+                    <select v-model="filtroMes">
+                        <option value="0">Todos</option>
+                        <option value="01">Janeiro</option>
+                        <option value="02">Fevereiro</option>
+                        <option value="03">Março</option>
+                        <option value="04">Abril</option>
+                        <option value="05">Maio</option>
+                        <option value="06">Junho</option>
+                        <option value="07">Julho</option>
+                        <option value="08">Agosto</option>
+                        <option value="09">Setembro</option>
+                        <option value="10">Outubro</option>
+                        <option value="11">Novembro</option>
+                        <option value="12">Dezembro</option>
                     </select>
-                    <label>Peso</label>
+                    <label>Por Mês</label>
                 </div>
+            </div>
 
-                 <div class="input-field col s12 ">
-                    <textarea id="conteudo" placeholder="CONTEUDO"  v-model="objProva.conteudo" autofocus required class="validate active materialize-textarea"></textarea>
-                    <label class="active" for="conteudo">Conteúdo</label>
+            <table class="highlight">
+                <thead>
+                    <tr>
+                        <th>Data</th>
+                        <th>Nome</th>
+                        <th>Peso</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="prova in ProvaArray" v-if="(FiltroPorMes(prova) && FiltroPorPesquisa(prova))">
+                        <td>{{prova.data | formatDate}}</td>
+                        <td>{{prova.nome}}</td>
+                        <td>{{prova.peso}}0%</td>
+                        <td class="left">
+                            <a class="btn-floating  btn-small modal-trigger" href="#modal2" @click="EditarProva(prova); AtribuirNota()"><i class="material-icons">exposure_plus_1</i></a>
+                            <a class="btn-floating  btn-small modal-trigger" href="#modal1" @click="EditarProva(prova)"><i class="material-icons">edit</i></a>
+                            <a class="btn-floating  btn-small modal-trigger" href="#!" @click="ExcluirProva(prova)"><i class="material-icons">delete</i></a>
+                            
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="fixed-action-btn">
+                <a class="btn-floating btn-large  red modal-trigger" href="#modal1" @click="ResetObjProva()"> <i class="large material-icons">add</i></a>
+            </div>
+
+            <div id="modal1" class="modal">
+                <div class="modal-content row">
+
+                    <div class="input-field col s4">
+                        <input id="data" placeholder="DATA" type="date"  v-model="objProva.data" autofocus required class="datepicker active">
+                        <label class="active" for="data">DATA</label>
+                    </div>
+                    
+                    <div class="input-field col s4">
+                        <textarea id="nome" placeholder="NOME"  v-model="objProva.nome" autofocus required class="validate active materialize-textarea"></textarea>
+                        <label class="active" for="conteudo">Nome</label>
+                    </div>
+
+                    <div class="input-field col s4">
+                        <select id="selectPeso" v-model="objProva.peso">
+                        <option value="0">0%</option>
+                        <option value="1">10%</option>
+                        <option value="2">20%</option>
+                        <option value="3">30%</option>
+                        <option value="4">40%</option>
+                        <option value="5">50%</option>
+                        <option value="6">60%</option>
+                        <option value="7">70%</option>
+                        <option value="8">80%</option>
+                        <option value="9">90%</option>
+                        <option value="10">100%</option>
+                        </select>
+                        <label>Peso</label>
+                    </div>
+
+                    <div class="input-field col s12 ">
+                        <textarea id="conteudo" placeholder="CONTEUDO"  v-model="objProva.conteudo" autofocus required class="validate active materialize-textarea"></textarea>
+                        <label class="active" for="conteudo">Conteúdo</label>
+                    </div>
+                    
+
                 </div>
-                
-
-            </div>
-            <div class="modal-footer">
-                <button class="btn modal-action modal-close red" @click="ResetObjProva()">CANCELAR</button>
-                <button class="btn modal-action modal-close green" v-if="objProva.id===''" @click="InserirProva()">INCLUIR</button>
-                <button class="btn modal-action modal-close green" v-else @click="UpdateProva()">EDITAR</button>
-            </div>
-        </div>
-
-        <div id="modal2" class="modal">
-            <div class="modal-content ">
-                <h1>NOTAS</h1>
-                <div class="responsive-table table-status-sheet">
-                <table id="tabelaNotas">
-                    <thead>
-                        <tr>
-                            <th @click="codeOrdem=!codeOrdem">
-                                Codigo
-                                <i v-if="codeOrdem" class="material-icons Tiny">arrow_drop_down</i>
-                                <i v-else class="material-icons Tiny">arrow_drop_up</i>
-                            </th>
-                            <th @click="nomeOrdem=!nomeOrdem">
-                                Aluno
-                                <i v-if="nomeOrdem" class="material-icons Tiny">arrow_drop_down</i>
-                                <i v-else class="material-icons Tiny">arrow_drop_up</i>
-                            </th>                            
-                            <th>Nota</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr v-for="nota in modalNota">
-                            <td>{{nota.codigo}} </td>
-                            <td>{{nota.nome_aluno}} </td>                            
-                            <td>
-                                <div v-if="(nota !== editNota)">
-                                    {{nota.nota | formatNota}} 
-                                    <a class="btn-floating  btn-small"  href="#!" @click="EditarNota(nota)"><i class="material-icons">edit</i></a>
-                                </div>
-                                <div v-else class="row">
-                                    <input id="icon_prefix" v-model="novaNota" type="text" class="validate col s2">
-                                    <a class="btn-floating  btn-small" href="#!" @click="nota.nota=Number(novaNota);editNota=null;"><i class="material-icons">done</i></a>
-                                    <a class="btn-floating  btn-small" href="#!" @click="editNota=null"><i class="material-icons">clear</i></a>
-
-
-                                </div>
-
-                            </td>
-                        </tr>
-                        
-                    </tbody>
-                </table>
+                <div class="modal-footer">
+                    <button class="btn modal-action modal-close red" @click="ResetObjProva()">CANCELAR</button>
+                    <button class="btn modal-action modal-close green" v-if="objProva.id===''" @click="InserirProva()">INCLUIR</button>
+                    <button class="btn modal-action modal-close green" v-else @click="UpdateProva()">EDITAR</button>
                 </div>
-                
+            </div>
 
+            <div id="modal2" class="modal">
+                <div class="modal-content ">
+                    <h1>NOTAS</h1>
+                    <div class="responsive-table table-status-sheet">
+                    <table id="tabelaNotas">
+                        <thead>
+                            <tr>
+                                <th @click="codeOrdem=!codeOrdem">
+                                    Codigo
+                                    <i v-if="codeOrdem" class="material-icons Tiny">arrow_drop_down</i>
+                                    <i v-else class="material-icons Tiny">arrow_drop_up</i>
+                                </th>
+                                <th @click="nomeOrdem=!nomeOrdem">
+                                    Aluno
+                                    <i v-if="nomeOrdem" class="material-icons Tiny">arrow_drop_down</i>
+                                    <i v-else class="material-icons Tiny">arrow_drop_up</i>
+                                </th>                            
+                                <th>Nota</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="nota in modalNota">
+                                <td>{{nota.codigo}} </td>
+                                <td>{{nota.nome_aluno}} </td>                            
+                                <td>
+                                    <div v-if="(nota !== editNota)">
+                                        {{nota.nota | formatNota}} 
+                                        <a class="btn-floating  btn-small"  href="#!" @click="EditarNota(nota)"><i class="material-icons">edit</i></a>
+                                    </div>
+                                    <div v-else class="row">
+                                        <input id="icon_prefix" v-model="novaNota" type="text" class="validate col s2">
+                                        <a class="btn-floating  btn-small" href="#!" @click="nota.nota=Number(novaNota);editNota=null;"><i class="material-icons">done</i></a>
+                                        <a class="btn-floating  btn-small" href="#!" @click="editNota=null"><i class="material-icons">clear</i></a>
+
+
+                                    </div>
+
+                                </td>
+                            </tr>
+                            
+                        </tbody>
+                    </table>
+                    </div>
+                    
+
+                </div>
+                <div class="modal-footer">
+                    <button class="btn modal-action modal-close red" @click="modalNota=null;">CANCELAR</button>
+                    <button class="btn modal-action modal-close green" @click="UpdateNota()">EDITAR</button>
+                </div>
             </div>
-            <div class="modal-footer">
-                <button class="btn modal-action modal-close red" @click="modalNota=null;">CANCELAR</button>
-                <button class="btn modal-action modal-close green" @click="UpdateNota()">EDITAR</button>
-            </div>
+
         </div>
 
     </div>
@@ -168,6 +174,7 @@ export default {
         ])
     },
     beforeCreate() {
+        this.$store.commit("Setor","prova");
         if (this.$store.getters.TurmaAtual==null){  
             this.$store.commit("TurmaAtual",{id: this.$route.params.id });
         }
@@ -175,6 +182,7 @@ export default {
     beforeUpdate: function() {
         // Jquery para o modal
         $(document).ready(function() {
+             $('select').formSelect();
         });
     },
     beforeMount: function() {
@@ -203,7 +211,7 @@ export default {
     },
     data() {
         return {
-            loading: false,
+            loading: true,
             pesquisa:'',
             filtroMes:0,
             

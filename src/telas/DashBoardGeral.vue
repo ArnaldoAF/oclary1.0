@@ -8,9 +8,13 @@
     export default {
       computed:{
         ...mapMutations([
-            'TurmaAtual'
+            'TurmaAtual',
+            'Setor'
         ])
       },
+      beforeCreate() {
+        this.$store.commit("Setor",null);
+     },
       created() {
         this.$store.commit("TurmaAtual",null);
       }

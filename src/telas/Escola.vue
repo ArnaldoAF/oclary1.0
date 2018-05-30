@@ -2,11 +2,13 @@
     <div>
     
     <div class="container">
-        <div v-if="loading" class="progress center">
+        <div v-if="loading" class="progress center blue">
             <div class="indeterminate"></div>
         </div>
         <div v-else-if="!loading && escolasArray.length==0">
-            <h3>SEM ESCOLAS</h3>
+            <div class="card-panel">
+                <h3>Não há Escolas</h3>
+            </div>
         </div>
             <!-- LISTA DE ESCOLAS -->
             <ul v-else class="collapsible" >
@@ -128,6 +130,9 @@ export default {
         ...mapMutations([
             'TurmaAtual'
         ])
+    },
+    beforeCreate() {
+        this.$store.commit("Setor","escola");
     },
     beforeUpdate: function() {
         // Jquery para o modal

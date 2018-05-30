@@ -26,6 +26,7 @@
                         <div class="col s3 center-align"> <router-link class="btn-floating s3 btn-large blue " :to="'/escola/turma/'+objTurma.id+'/planejamento'"><i class="material-icons">event</i></router-link></div>
                         <div class="col s3 center-align"> <router-link class="btn-floating s3 btn-large blue " :to="'/escola/turma/'+objTurma.id+'/provas'"><i class="material-icons">style</i></router-link></div>
                         <div class="col s3 center-align"> <router-link class="btn-floating s3 btn-large blue " :to="'/escola/turma/'+objTurma.id+'/presencas'"><i class="material-icons">done</i></router-link></div>
+                        
                     </div>
                 </div>
             </div>
@@ -120,13 +121,15 @@ export default{
     firebase:{},
     computed:{
         ...mapMutations([
-            'TurmaAtual'
+            'TurmaAtual',
+            'Setor'
         ]),
         ...mapGetters([
             'TurmaAtual'
         ])
     },
     beforeCreate() {
+        this.$store.commit("Setor","escola");
         if (this.$store.getters.TurmaAtual==null){  
             this.$store.commit("TurmaAtual",{id: this.$route.params.id });
         }

@@ -1,108 +1,113 @@
 <template>
     <div>
-        Planejamento
 
-        <div class="row">
-            <div class="input-field col s6">
-                <i class="material-icons prefix">search</i>
-                <input id="icon_prefix" type="text" class="validate" v-model="pesquisa">
-                <label for="icon_prefix">Conteudo</label>
-            </div>
-
-            <div class="input-field col s3">
-                <select v-model="filtroAplicado">
-                    <option value="1">Todos</option>
-                    <option value="2">Completados</option>
-                    <option value="3">Não Completados</option>
-                </select>
-                <label>Filtragem</label>
-            </div>
-
-            <div class="input-field col s3">
-                <select v-model="filtroMes">
-                    <option value="0">Todos</option>
-                    <option value="01">Janeiro</option>
-                    <option value="02">Fevereiro</option>
-                    <option value="03">Março</option>
-                    <option value="04">Abril</option>
-                    <option value="05">Maio</option>
-                    <option value="06">Junho</option>
-                    <option value="07">Julho</option>
-                    <option value="08">Agosto</option>
-                    <option value="09">Setembro</option>
-                    <option value="10">Outubro</option>
-                    <option value="11">Novembro</option>
-                    <option value="12">Dezembro</option>
-                </select>
-                <label>Por Mês</label>
-            </div>
+        <div v-if="loading" class="progress center blue">
+            <div class="indeterminate"></div>
         </div>
+        <div v-else>
 
-        <div class="responsive-table table-status-sheet">
-        <table class="highlight" id="tabelaNotas">
-            <thead>
-                <tr >
-                    <th>Data</th>
-                    <th>Counteudo</th>
-                    <th>Aplicado</th>
-                    <th>Ações</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr v-for="planejamento in PlanejamentoArray" v-if="(FiltroPorAplicacao(planejamento) && FiltroPorMes(planejamento) && FiltroPorPesquisa(planejamento))">
-                    <td>{{planejamento.data | formatDate}}</td>
-                    <td class="" style="text-overflow:ellipsis; overflow: hidden;">{{planejamento.conteudo | truncate 5 }}</td>
-                    <td >
-                        <i v-if="planejamento.aplicado" class="material-icons green-text">check</i>
-                        <i v-else class="material-icons red-text">clear</i>
-                        
-                    </td>
-                    <td class="left">
-                        <a class="btn-floating  btn-small modal-trigger" href="#modal1" @click="EditarPlanejamento(planejamento)"><i class="material-icons">edit</i></a>
-                        <a class="btn-floating  btn-small modal-trigger" href="#!" @click="ExcluirPlanejamento(planejamento)"><i class="material-icons">delete</i></a>
-                        <a class="btn-floating  btn-small modal-trigger" href="#!" @click="planejamento.aplicado=!planejamento.aplicado; EditarPlanejamento(planejamento); UpdatePlanejamento(); ">
-                            <i v-if="!planejamento.aplicado" class="material-icons ">check</i>
-                            <i v-else class="material-icons ">clear</i>
-                        </a>
-                        
-                    </td>
+            <div class="row">
+                <div class="input-field col s6">
+                    <i class="material-icons prefix">search</i>
+                    <input id="icon_prefix" type="text" class="validate" v-model="pesquisa">
+                    <label for="icon_prefix">Conteudo</label>
+                </div>
 
+                <div class="input-field col s3">
+                    <select v-model="filtroAplicado">
+                        <option value="1">Todos</option>
+                        <option value="2">Completados</option>
+                        <option value="3">Não Completados</option>
+                    </select>
+                    <label>Filtragem</label>
+                </div>
+
+                <div class="input-field col s3">
+                    <select v-model="filtroMes">
+                        <option value="0">Todos</option>
+                        <option value="01">Janeiro</option>
+                        <option value="02">Fevereiro</option>
+                        <option value="03">Março</option>
+                        <option value="04">Abril</option>
+                        <option value="05">Maio</option>
+                        <option value="06">Junho</option>
+                        <option value="07">Julho</option>
+                        <option value="08">Agosto</option>
+                        <option value="09">Setembro</option>
+                        <option value="10">Outubro</option>
+                        <option value="11">Novembro</option>
+                        <option value="12">Dezembro</option>
+                    </select>
+                    <label>Por Mês</label>
+                </div>
+            </div>
+
+            <div class="responsive-table table-status-sheet">
+                <table class="highlight" id="tabelaNotas">
+                    <thead>
+                        <tr >
+                            <th>Data</th>
+                            <th>Counteudo</th>
+                            <th>Aplicado</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="planejamento in PlanejamentoArray" v-if="(FiltroPorAplicacao(planejamento) && FiltroPorMes(planejamento) && FiltroPorPesquisa(planejamento))">
+                            <td>{{planejamento.data | formatDate}}</td>
+                            <td class="" style="text-overflow:ellipsis; overflow: hidden;">{{planejamento.conteudo | truncate 5 }}</td>
+                            <td >
+                                <i v-if="planejamento.aplicado" class="material-icons green-text">check</i>
+                                <i v-else class="material-icons red-text">clear</i>
+                                
+                            </td>
+                            <td class="left">
+                                <a class="btn-floating  btn-small modal-trigger" href="#modal1" @click="EditarPlanejamento(planejamento)"><i class="material-icons">edit</i></a>
+                                <a class="btn-floating  btn-small modal-trigger" href="#!" @click="ExcluirPlanejamento(planejamento)"><i class="material-icons">delete</i></a>
+                                <a class="btn-floating  btn-small modal-trigger" href="#!" @click="planejamento.aplicado=!planejamento.aplicado; EditarPlanejamento(planejamento); UpdatePlanejamento(); ">
+                                    <i v-if="!planejamento.aplicado" class="material-icons ">check</i>
+                                    <i v-else class="material-icons ">clear</i>
+                                </a>
+                                
+                            </td>
+
+                            
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="fixed-action-btn">
+                <a class="btn-floating btn-large red modal-trigger" href="#modal1"> <i class="large material-icons">add</i></a>
+            </div>
+
+            <div id="modal1" class="modal">
+                <div class="modal-content">
+
+                    <div class="input-field ">
+                        <input id="data" placeholder="DATA" type="date" v-model="objPlanejamento.data" autofocus required class="datepicker active">
+                        <label class="active" for="data">DATA</label>
+                    </div>
                     
-                </tr>
-            </tbody>
-        </table>
-        </div>
+                    <div class="input-field ">
+                        <textarea id="conteudo" placeholder="CONTEUDO"  v-model="objPlanejamento.conteudo" autofocus required class="validate active materialize-textarea"></textarea>
+                        <label class="active" for="conteudo">Conteúdo</label>
+                    </div>
 
-        <div class="fixed-action-btn">
-            <a class="btn-floating btn-large red modal-trigger" href="#modal1"> <i class="large material-icons">add</i></a>
-        </div>
+                    <label>
+                        <input type="checkbox" class="filled-in"  v-model="objPlanejamento.aplicado"/>
+                        <span>Aplicado</span>
+                    </label>
 
-        <div id="modal1" class="modal">
-            <div class="modal-content">
-
-                <div class="input-field ">
-                    <input id="data" placeholder="DATA" type="date" v-model="objPlanejamento.data" autofocus required class="datepicker active">
-                    <label class="active" for="data">DATA</label>
                 </div>
-                
-                <div class="input-field ">
-                    <textarea id="conteudo" placeholder="CONTEUDO"  v-model="objPlanejamento.conteudo" autofocus required class="validate active materialize-textarea"></textarea>
-                    <label class="active" for="conteudo">Conteúdo</label>
+                <div class="modal-footer">
+                    <button class="btn modal-action modal-close red" @click="ResetObjPlanejamento()">CANCELAR</button>
+                    <button class="btn modal-action modal-close green" v-if="objPlanejamento.id===''" @click="InserirPlanejamento()">INCLUIR</button>
+                    <button class="btn modal-action modal-close green" v-else @click="UpdatePlanejamento()">EDITAR</button>
                 </div>
-
-                <label>
-                    <input type="checkbox" class="filled-in"  v-model="objPlanejamento.aplicado"/>
-                    <span>Aplicado</span>
-                </label>
-
             </div>
-            <div class="modal-footer">
-                <button class="btn modal-action modal-close red" @click="ResetObjPlanejamento()">CANCELAR</button>
-                <button class="btn modal-action modal-close green" v-if="objPlanejamento.id===''" @click="InserirPlanejamento()">INCLUIR</button>
-                <button class="btn modal-action modal-close green" v-else @click="UpdatePlanejamento()">EDITAR</button>
-            </div>
+
         </div>
-
     </div>
 </template>
 <script>
@@ -120,6 +125,7 @@ export default {
         ])
     },
     beforeCreate() {
+        this.$store.commit("Setor","planejamento");
         if (this.$store.getters.TurmaAtual==null){  
             this.$store.commit("TurmaAtual",{id: this.$route.params.id });
         }
@@ -127,6 +133,7 @@ export default {
      beforeUpdate: function() {
         // Jquery para o modal
         $(document).ready(function() {
+            $('select').formSelect();
         });
     },
     beforeMount: function() {
@@ -151,7 +158,7 @@ export default {
     },
     data() {
         return { 
-            loading: false,
+            loading: true,
             pesquisa:'',
             filtroAplicado:1,
             filtroMes:0,

@@ -1,144 +1,149 @@
 <template>
     <div>
         
-        ALUNOS 
-        <div class="row">
-            <div class="input-field col s6">
-                <i class="material-icons prefix">search</i>
-                <input id="icon_prefix" type="text" class="validate" v-model="pesquisa">
-                <label for="icon_prefix">Aluno ou Codigo</label>
-            </div>
+        <div v-if="loading" class="progress center blue">
+            <div class="indeterminate"></div>
         </div>
+        <div v-else>
 
-        <div class="responsive-table table-status-sheet">
-        <table id="tabelaNotas" class="highlight">
-            <thead>
-                <tr>
-                    <th class="" @click="codeOrdem=!codeOrdem">
-                        Codigo 
-                        <i v-if="codeOrdem" class="material-icons Tiny">arrow_drop_down</i>
-                        <i v-else class="material-icons Tiny">arrow_drop_up</i>
-                    </th>
-                    <th @click="nomeOrdem=!nomeOrdem">
-                        Aluno
-                        <i v-if="nomeOrdem" class="material-icons Tiny">arrow_drop_down</i>
-                        <i v-else class="material-icons Tiny">arrow_drop_up</i>
-                    </th>
-                    <th>Ações</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr v-for="aluno in AlunosArray" v-if="(aluno.nome.toUpperCase().indexOf(pesquisa.toUpperCase())!==-1 || aluno.codigo.toUpperCase().indexOf(pesquisa.toUpperCase())!==-1) || pesquisa===''">
-                    <td>{{aluno.codigo}}</td>
-                    <td>{{aluno.nome}}</td>
-                    <td class="left">
-                        <a class="btn-floating  btn-small modal-trigger " href="#modal3" @click="EditarAluno(aluno); AtribuirPresenca();"><i class="material-icons">assignment_turned_in</i></a>
-                        <a class="btn-floating  btn-small modal-trigger tooltipped" data-position="bottom"  @click="EditarAluno(aluno); AtribuirNota()" data-tooltip="NOTAS" href="#modal2" ><i class="material-icons">exposure_plus_1</i></a>
-                        <a class="btn-floating  btn-small modal-trigger" href="#modal1" @click="EditarAluno(aluno)"><i class="material-icons">edit</i></a>
-                        <a class="btn-floating  btn-small modal-trigger" href="#!" @click="ExcluirAluno(aluno)"><i class="material-icons">delete</i></a>
-                        
-                    </td>
-
-                    
-                </tr>
-            </tbody>
-        </table>
-        </div>
-
-        <div class="fixed-action-btn">
-            <a class="btn-floating btn-large red modal-trigger" href="#modal1" @click="ResetObjAluno()"> <i class="large material-icons">add</i></a>
-        </div>
-
-        <div id="modal1" class="modal">
-            <div class="modal-content">
-                <div class="input-field ">
-                    <input id="last_name" placeholder="CODIGO DO ALUNO" type="text" v-model="objAluno.codigo" autofocus required class="validate active">
-                    <label class="active" for="last_name">Codigo do Aluno</label>
-                </div>
-                <div class="input-field ">
-                    <input id="last_name" placeholder="NOME DO ALUNO" type="text" v-model="objAluno.nome" autofocus required class="validate active">
-                    <label class="active" for="last_name">Nome do Aluno</label>
+            <div class="row">
+                <div class="input-field col s6">
+                    <i class="material-icons prefix">search</i>
+                    <input id="icon_prefix" type="text" class="validate" v-model="pesquisa">
+                    <label for="icon_prefix">Aluno ou Codigo</label>
                 </div>
             </div>
-            <div class="modal-footer">
-                <button class="btn modal-action modal-close red" @click="ResetObjAluno()">CANCELAR</button>
-                <button class="btn modal-action modal-close green" v-if="objAluno.id===''" @click="InserirAluno()">INCLUIR</button>
-                <button class="btn modal-action modal-close green" v-else @click="UpdateAluno()">EDITAR</button>
-            </div>
-        </div>
 
-        <div id="modal2" class="modal">
-            <div>
+            <div class="responsive-table table-status-sheet">
+                <table id="tabelaNotas" class="highlight">
+                    <thead>
+                        <tr>
+                            <th class="" @click="codeOrdem=!codeOrdem">
+                                Codigo 
+                                <i v-if="codeOrdem" class="material-icons Tiny">arrow_drop_down</i>
+                                <i v-else class="material-icons Tiny">arrow_drop_up</i>
+                            </th>
+                            <th @click="nomeOrdem=!nomeOrdem">
+                                Aluno
+                                <i v-if="nomeOrdem" class="material-icons Tiny">arrow_drop_down</i>
+                                <i v-else class="material-icons Tiny">arrow_drop_up</i>
+                            </th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="aluno in AlunosArray" v-if="(aluno.nome.toUpperCase().indexOf(pesquisa.toUpperCase())!==-1 || aluno.codigo.toUpperCase().indexOf(pesquisa.toUpperCase())!==-1) || pesquisa===''">
+                            <td>{{aluno.codigo}}</td>
+                            <td>{{aluno.nome}}</td>
+                            <td class="left">
+                                <a class="btn-floating  btn-small modal-trigger " href="#modal3" @click="EditarAluno(aluno); AtribuirPresenca();"><i class="material-icons">assignment_turned_in</i></a>
+                                <a class="btn-floating  btn-small modal-trigger tooltipped" data-position="bottom"  @click="EditarAluno(aluno); AtribuirNota()" data-tooltip="NOTAS" href="#modal2" ><i class="material-icons">exposure_plus_1</i></a>
+                                <a class="btn-floating  btn-small modal-trigger" href="#modal1" @click="EditarAluno(aluno)"><i class="material-icons">edit</i></a>
+                                <a class="btn-floating  btn-small modal-trigger" href="#!" @click="ExcluirAluno(aluno)"><i class="material-icons">delete</i></a>
+                                
+                            </td>
+
+                            
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="fixed-action-btn">
+                <a class="btn-floating btn-large red modal-trigger" href="#modal1" @click="ResetObjAluno()"> <i class="large material-icons">add</i></a>
+            </div>
+
+            <div id="modal1" class="modal">
                 <div class="modal-content">
-                    <h3>Média: {{media | formatNota}} </h3>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Prova</th>
-                                <th>Peso</th>
-                                <th>Nota</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr v-for="prova in modalNota">
-                                <td>{{prova.prova}}</td>
-                                <td>{{prova.peso}}0%</td>
-                                <td>
-                                    
-                                    <div v-if="(prova !== editNota)">
-                                        {{prova.nota | formatNota}} 
-                                        <a class="btn-floating  btn-small"  href="#!" @click="EditarNota(prova)"><i class="material-icons">edit</i></a>
-                                    </div>
-                                    <div v-else class="row">
-                                        <input id="icon_prefix" v-model="novaNota" type="text" class="validate col s2">
-                                        <a class="btn-floating  btn-small" href="#!" @click="prova.nota=Number(novaNota);editNota=null;CalcularMedia();"><i class="material-icons">done</i></a>
-                                        <a class="btn-floating  btn-small" href="#!" @click="editNota=null"><i class="material-icons">clear</i></a>
-                                    </div>
-                                    
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                    <div class="input-field ">
+                        <input id="last_name" placeholder="CODIGO DO ALUNO" type="text" v-model="objAluno.codigo" autofocus required class="validate active">
+                        <label class="active" for="last_name">Codigo do Aluno</label>
+                    </div>
+                    <div class="input-field ">
+                        <input id="last_name" placeholder="NOME DO ALUNO" type="text" v-model="objAluno.nome" autofocus required class="validate active">
+                        <label class="active" for="last_name">Nome do Aluno</label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn modal-action modal-close red" @click="ResetObjAluno()">CANCELAR</button>
+                    <button class="btn modal-action modal-close green" v-if="objAluno.id===''" @click="InserirAluno()">INCLUIR</button>
+                    <button class="btn modal-action modal-close green" v-else @click="UpdateAluno()">EDITAR</button>
                 </div>
             </div>
-            <div class="modal-footer">
-                <button class="btn modal-action modal-close red" @click="modalNota=null;">CANCELAR</button>
-                <button class="btn modal-action modal-close green" @click="UpdateNota()">EDITAR</button>
-            </div>
-        </div>
 
-        <div id="modal3" class="modal">
-            <div>
-                <div class="modal-content">
-                    <h3>Porcentagem: {{porcetagemPre | formatNota}}% </h3>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Dia</th>
-                                <th>Presença</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr v-for="presenca in modalPresenca">
-                                <td>{{presenca.data | formatDate}}</td>
-                                <td>
-                                    <label>
-                                        <input type="checkbox" v-model="presenca.presenca"  class="filled-in"/>
-                                        <span></span>
-                                    </label>
-                                </td>
-
-                            </tr>
-                        </tbody>
-                    </table>
+            <div id="modal2" class="modal">
+                <div>
+                    <div class="modal-content">
+                        <h3>Média: {{media | formatNota}} </h3>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Prova</th>
+                                    <th>Peso</th>
+                                    <th>Nota</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="prova in modalNota">
+                                    <td>{{prova.prova}}</td>
+                                    <td>{{prova.peso}}0%</td>
+                                    <td>
+                                        
+                                        <div v-if="(prova !== editNota)">
+                                            {{prova.nota | formatNota}} 
+                                            <a class="btn-floating  btn-small"  href="#!" @click="EditarNota(prova)"><i class="material-icons">edit</i></a>
+                                        </div>
+                                        <div v-else class="row">
+                                            <input id="icon_prefix" v-model="novaNota" type="text" class="validate col s2">
+                                            <a class="btn-floating  btn-small" href="#!" @click="prova.nota=Number(novaNota);editNota=null;CalcularMedia();"><i class="material-icons">done</i></a>
+                                            <a class="btn-floating  btn-small" href="#!" @click="editNota=null"><i class="material-icons">clear</i></a>
+                                        </div>
+                                        
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn modal-action modal-close red" @click="modalNota=null;">CANCELAR</button>
+                    <button class="btn modal-action modal-close green" @click="UpdateNota()">EDITAR</button>
                 </div>
             </div>
-            <div class="modal-footer">
-                <button class="btn modal-action modal-close red" @click="modalPresenca=null">CANCELAR</button>
-                <button class="btn modal-action modal-close green" @click="UpdatePresenca()">EDITAR</button>
-            </div>
-        </div>
 
+            <div id="modal3" class="modal">
+                <div>
+                    <div class="modal-content">
+                        <h3>Porcentagem: {{porcetagemPre | formatNota}}% </h3>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Dia</th>
+                                    <th>Presença</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="presenca in modalPresenca">
+                                    <td>{{presenca.data | formatDate}}</td>
+                                    <td>
+                                        <label>
+                                            <input type="checkbox" v-model="presenca.presenca"  class="filled-in"/>
+                                            <span></span>
+                                        </label>
+                                    </td>
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn modal-action modal-close red" @click="modalPresenca=null">CANCELAR</button>
+                    <button class="btn modal-action modal-close green" @click="UpdatePresenca()">EDITAR</button>
+                </div>
+            </div>
+
+        </div>
 
         
 
@@ -151,15 +156,20 @@ import {mapMutations, mapGetters} from 'vuex';
 export default {
     computed:{
         ...mapMutations([
-            'TurmaAtual'
+            'TurmaAtual',
+            'Setor'
         ]),
         ...mapGetters([
             'TurmaAtual'
         ])
     },
+
     beforeCreate() {
+        this.$store.commit("Setor","aluno");
         if (this.$store.getters.TurmaAtual==null){  
             this.$store.commit("TurmaAtual",{id: this.$route.params.id });
+            
+
         }
     },
     
@@ -168,6 +178,7 @@ export default {
         $(document).ready(function() {
             $(".collapsible").collapsible();
             $('.tooltipped').tooltip();
+             $('select').formSelect();
         });
     },
     mounted: function() {
@@ -203,7 +214,7 @@ export default {
     },
     data () {
         return {
-            loading:false,
+            loading: true,
             pesquisa:'',
             codeOrdem: true,
             nomeOrdem: true,
