@@ -60,7 +60,7 @@
                 <a class="btn-floating btn-large  red modal-trigger" href="#modal1" @click="ResetObjProva()"> <i class="large material-icons">add</i></a>
             </div>
 
-            <div id="modal1" class="modal">
+            <div id="modal1" class="modal" style="overflow: visible !important;">
                 <div class="modal-content row">
 
                     <div class="input-field col s4">
@@ -73,8 +73,8 @@
                         <label class="active" for="conteudo">Nome</label>
                     </div>
 
-                    <div class="input-field col s4">
-                        <select id="selectPeso" v-model="objProva.peso">
+                    <div class="input-field col s4" >
+                        <select id="selectPeso" v-model="objProva.peso" style="z-index:100; overflow-y: visible">
                         <option value="0">0%</option>
                         <option value="1">10%</option>
                         <option value="2">20%</option>

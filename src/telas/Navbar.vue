@@ -10,13 +10,13 @@
                     <h1> OClaRy</h1>
                 </div>
             </li>
-            <li><router-link to="/" data-target="slide-out" class="sidenav-close"><i class="material-icons">home</i>Home</router-link> </li>
-            <li><router-link to="/escola" data-target="slide-out" class="sidenav-close"><i class="material-icons">school</i>Escola</router-link></li>
-            <li><router-link v-if="TurmaAtual!=null" :to="'/escola/turma/'+TurmaAtual.id+''"  data-target="slide-out" class="sidenav-close " :class="{ 'blue': Setor === 'escola' }"> <i class="material-icons">group</i>{{TurmaAtual.nome}} {{TurmaAtual.disciplina}} </router-link></li>
-            <li><router-link v-if="TurmaAtual!=null" :to="'/escola/turma/'+TurmaAtual.id+'/alunos'"  data-target="slide-out" class="sidenav-close " :class="{ 'blue': Setor === 'aluno' }"> <i class="material-icons">person</i>Alunos</router-link></li>
-            <li><router-link v-if="TurmaAtual!=null" :to="'/escola/turma/'+TurmaAtual.id+'/planejamento'"  data-target="slide-out" class="sidenav-close" :class="{ 'blue': Setor === 'planejmaneto' }"> <i class="material-icons">event</i>Planejamento</router-link></li>
-            <li><router-link v-if="TurmaAtual!=null" :to="'/escola/turma/'+TurmaAtual.id+'/provas'"  data-target="slide-out" class="sidenav-close" :class="{ 'blue': Setor === 'provas' }"> <i class="material-icons">style</i>Provas</router-link></li>
-            <li><router-link v-if="TurmaAtual!=null" :to="'/escola/turma/'+TurmaAtual.id+'/presencas'"  data-target="slide-out" class="sidenav-close " :class="{ 'blue': Setor === 'presencas' }"> <i class="material-icons ">done</i>Presença</router-link></li>
+            <li><router-link to="/" data-target="slide-out" class="sidenav-close" :class="{ 'blue': this.$store.getters.Setor === null }"><i class="material-icons">home</i>Home</router-link> </li>
+            <li><router-link to="/escola" data-target="slide-out" class="sidenav-close" :class="{ 'blue': this.$store.getters.Setor === 'escola' }"><i class="material-icons">school</i>Escola</router-link></li>
+            <li><router-link v-if="TurmaAtual!=null" :to="'/escola/turma/'+TurmaAtual.id+''"  data-target="slide-out" class="sidenav-close " :class="{ blue: this.$store.getters.Setor === 'turma' }"> <i class="material-icons">group</i>{{TurmaAtual.nome}} {{TurmaAtual.disciplina}} </router-link></li>
+            <li><router-link v-if="TurmaAtual!=null" :to="'/escola/turma/'+TurmaAtual.id+'/alunos'"  data-target="slide-out" class="sidenav-close " :class="{ 'blue': this.$store.getters.Setor === 'aluno' }"> <i class="material-icons">person</i>Alunos</router-link></li>
+            <li><router-link v-if="TurmaAtual!=null" :to="'/escola/turma/'+TurmaAtual.id+'/planejamento'"  data-target="slide-out" class="sidenav-close" :class="{ 'blue': this.$store.getters.Setor === 'planejamento' }"> <i class="material-icons">event</i>Planejamento</router-link></li>
+            <li><router-link v-if="TurmaAtual!=null" :to="'/escola/turma/'+TurmaAtual.id+'/provas'"  data-target="slide-out" class="sidenav-close" :class="{ 'blue': this.$store.getters.Setor === 'prova' }"> <i class="material-icons">style</i>Provas</router-link></li>
+            <li><router-link v-if="TurmaAtual!=null" :to="'/escola/turma/'+TurmaAtual.id+'/presencas'"  data-target="slide-out" class="sidenav-close " :class="{ 'blue': this.$store.getters.Setor === 'presenca' }"> <i class="material-icons ">done</i>Presença</router-link></li>
         </ul>
     </div>
 </template>
@@ -47,11 +47,12 @@
 
         },
         watch: {
-            this.$store.getters.Setor,
+            
         },
         data () {
             return {
                 Setor:this.$store.getters.Setor,
+                ColorB:'blue',
                 VueClasse:{
 
                 }

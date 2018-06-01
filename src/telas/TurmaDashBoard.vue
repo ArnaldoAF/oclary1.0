@@ -129,7 +129,7 @@ export default{
         ])
     },
     beforeCreate() {
-        this.$store.commit("Setor","escola");
+        this.$store.commit("Setor","turma");
         if (this.$store.getters.TurmaAtual==null){  
             this.$store.commit("TurmaAtual",{id: this.$route.params.id });
         }
