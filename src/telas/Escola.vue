@@ -27,7 +27,7 @@
                         
                         <a class="btn-floating  btn-small modal-trigger" href="#modal2" @click="idEscolaTurma=escola.id" ><i class="material-icons">group_add</i></a>
                         <a class="btn-floating  btn-small modal-trigger" href="#modal1" @click="EditarEscola(escola)" ><i class="material-icons">edit</i></a>
-                        <a class="btn-floating  btn-small" @click="ExcluirEscola(escola)"><i class="material-icons">delete</i></a>
+                        <a class="btn-floating  btn-small modal-trigger" href="#modal3" @click="EditarEscola(escola)"><i class="material-icons">delete</i></a>
                     </span>
                     
                 </div>
@@ -48,7 +48,7 @@
                         <td> {{turma.disciplina}} </td>
                         <td class="right">
                             <a class="btn-floating  btn-small modal-trigger" href="#modal2" @click="EditarTurma(turma)" ><i class="material-icons">edit</i></a>
-                            <a class="btn-floating  btn-small" @click="ExcluirTurma(turma)"><i class="material-icons">delete</i></a>
+                            <a class="btn-floating  btn-small modal-trigger" href="#modal4" @click="EditarTurma(turma)"><i class="material-icons">delete</i></a>
                             <router-link class="btn-floating  btn-small" :to="'/escola/turma/'+turma.id+''" ><i @click="StoreTurma(turma)" class="material-icons">forward</i></router-link>
                         </td>
                         </tr>
@@ -73,29 +73,34 @@
             </ul>
 
             <!-- BOTÃO QUE ATIVA O FORMULARIO -->
-            <div v-if="!loading" class="fixed-action-btn">
+            <div v-if="!loading" class="fixed-action-btn" @click="nomeEscola=''; EditingEscola=null">
                 <a class="btn-floating btn-large red modal-trigger" href="#modal1">
                 <i class="large material-icons">add</i>
                 </a>
             </div>
 
             <!-- FORMULARIO ESCOLA -->
-            <div id="modal1" class="modal">
+            <div id="modal1" class="modal" @keyup.enter="VerificarEscola()">
                 <div class="modal-content">
                     <div class="input-field ">
-                        <input id="last_name" placeholder="NOME DA ESCOLA" type="text" v-model="nomeEscola" autofocus required class="validate active">
+                        <input id="last_name" placeholder="NOME DA ESCOLA" type="text" v-model="nomeEscola" autofocus required="" aria-required="true" class="validate active">
                         <label class="active" for="last_name">Nome da Escola</label>
+                        
                     </div>
                 </div>
                 <div class="modal-footer">
                     <button class="btn modal-action modal-close red" @click="nomeEscola=''; EditingEscola=null">CANCELAR</button>
-                    <button class="btn modal-action modal-close green" v-if="EditingEscola===null" @click="InserirEscola()">INCLUIR</button>
-                    <button class="btn modal-action modal-close green" v-else @click="UpdateEscola()">EDITAR</button>
+                    
+                    <button class="btn modal-action  green" @click="VerificarEscola()">
+                        <a class="white-text" v-if="EditingEscola===null">INCLUIR</a> 
+                        <a class="white-text" v-else>EDITAR</a> 
+                    </button>
+                    
                 </div>
             </div>
 
             <!-- FORMULARIO TURMA -->
-            <div id="modal2" class="modal">
+            <div id="modal2" class="modal" @keyup.enter="VerificarTurma()">
                 <div class="modal-content">
                     <div class="input-field ">
                         <input id="last_name" placeholder="NOME DA TURMA" type="text" v-model="objTurma.nome" autofocus class="validate">
@@ -108,12 +113,37 @@
                 </div>
                 <div class="modal-footer">
                     <button class="btn modal-action modal-close red" @click="ResetObjTurma()">CANCELAR</button>
-                    <button class="btn modal-action modal-close green" v-if="objTurma.id === ''" @click="InserirTurma()">INCLUIR</button>
-                    <button class="btn modal-action modal-close green" v-else @click="UpdateTurma()">EDITAR</button>
+                    
+                    <button class="btn modal-action  green" @click="VerificarTurma()">
+                        <a class="white-text" v-if="objTurma.id === ''">INCLUIR</a> 
+                        <a class="white-text" v-else>EDITAR</a> 
+                    </button>
                 </div>
 
             </div>
         
+            <div id="modal3" class="modal" @keyup.enter="ExcluirEscola(EditingEscola); ">
+                <div class="modal-content">
+                    <h5>Deseja excluir a escola {{nomeEscola}}?</h5>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn modal-action modal-close red" @click="nomeEscola=''; EditingEscola=null">CANCELAR</button>
+                    <button class="btn modal-action green" @click="ExcluirEscola(EditingEscola)">EXCLUIR</button>
+                    
+                </div>
+            </div>
+
+            <div id="modal4" class="modal" @keyup.enter="ExcluirTurma(objTurma); ">
+                <div class="modal-content">
+                    <h5>Deseja excluir a turma {{objTurma.nome}} ? Essa ação irá excluir todos os dados dessa turma!</h5>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn modal-action modal-close red" @click="ResetObjTurma()">CANCELAR</button>
+                    <button class="btn modal-action green" @click="ExcluirTurma(objTurma)">EXCLUIR</button>
+                    
+                </div>
+            </div>
+            
     </div>
 
 </div>
@@ -138,7 +168,6 @@ export default {
         // Jquery para o modal
             $(document).ready(function() {
             $(".collapsible").collapsible();
-            console.log("beforeUpdated");
             //console.log($(".collapsible").collapsible());
         });
     },
@@ -146,14 +175,12 @@ export default {
         // Jquery para o modal
             $(document).ready(function() {
             $(".collapsible").collapsible();
-            console.log("updated");
             //console.log($(".collapsible").collapsible());
         });
     },
     beforeMount: function() {
         $(document).ready(function() {
             $(".collapsible").collapsible();
-            console.log("beforeMounted");
             //console.log($(".collapsible").collapsible());
         })
     },
@@ -165,7 +192,6 @@ export default {
             $(document).on("shown.bs.modal", function(e) {
                 $("[autofocus]", e.target).focus();
             });
-            console.log("mounted");
             //console.log($(".collapsible").collapsible());
         });
     },
@@ -204,6 +230,12 @@ export default {
             this.escolasRef.push({ nome: this.nomeEscola });
             this.nomeEscola = "";
             this.EditingEscola = null;
+            
+            console.log("insert");
+            M.toast({html: 'Escola Inserida'})
+            //console.log($("#modal1").modal("close"));
+            //var instance = M.Modal.getInstance("#modal1");
+            //instance.open();
         },
         ExcluirEscola(escola) {
             var EscolaTurmas = this.turmasArray.filter( function(turma){return (turma.idEscola===escola.id);} );
@@ -211,6 +243,8 @@ export default {
                 this.ExcluirTurma(turma);
             });
             this.escolasRef.child(escola.id).remove();
+             $("#modal3").modal("close");
+             M.toast({html: 'Escola Excluida'})
         },
         EditarEscola(escola) {
             this.EditingEscola = escola;
@@ -222,6 +256,28 @@ export default {
                 .update({ nome: this.nomeEscola });
             this.nomeEscola = "";
             this.EditingEscola = null;
+            
+             M.toast({html: 'Escola Editada'})
+        },
+        VerificarEscola() {
+            // verificações
+            if(this.nomeEscola=="") 
+            { 
+                M.toast({html: 'Nome de Escola Vazio'})
+                return 0;
+            }
+            const Escola = this.escolasArray.find(
+                escola => escola.nome === this.nomeEscola
+            );
+
+            if(Escola!=null) M.toast({html: 'Escola já existe'})
+            else{
+                if(this.EditingEscola===null) this.InserirEscola();
+                else this.UpdateEscola();
+                $("#modal1").modal("close");
+            }
+
+            
         },
 
         // TURMA
@@ -230,10 +286,14 @@ export default {
             delete this.objTurma.id;
             this.turmaRef.push(this.objTurma);
             this.ResetObjTurma();
+             M.toast({html: 'Turma Criada'})
+           
         },
         ExcluirTurma(turma) {
             Database.ref("alunos").child(turma.id).remove();
             this.turmaRef.child(turma.id).remove();
+             $("#modal4").modal("close");
+             M.toast({html: 'Turma Excluida'})
         },
         EditarTurma(turma) {
             this.objTurma=Object.assign({}, turma);
@@ -247,6 +307,32 @@ export default {
                  });
             
             this.ResetObjTurma();
+            M.toast({html: 'Turma Editada'})
+        },
+        VerificarTurma(){
+            if(this.objTurma.nome=="" && this.objTurma.disciplina=="") 
+            { 
+                M.toast({html: 'Nome e disciplina estão vazios'})
+                return 0;
+            }
+            console.log(this.objTurma.idEscola);
+            const Turma = this.turmasArray.find(
+                turma => (turma.nome === this.objTurma.nome && 
+                            turma.disciplina === this.objTurma.disciplina &&
+                            turma.idEscola === this.idEscolaTurma
+                            )
+            );
+
+            console.log(this.idEscolaTurma);
+
+            if(Turma!=null) M.toast({html: 'Turma já existe'})
+            else{
+                if(this.objTurma.id === '') this.InserirTurma();
+                else this.UpdateTurma();
+                $("#modal2").modal("close");
+                //console.log("TURMA "+ Turma.nome);
+            }
+
         },
 
         ResetObjTurma() {

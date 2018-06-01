@@ -4,10 +4,15 @@
         <ul id="slide-out" class="sidenav sidenav-fixed">
             <li> 
                 <div class="user-view">
-                    <div class="background blue">
-                        
+                    <div class="background blue">    
                     </div>
-                    <h1> OClaRy</h1>
+                    <div class="valign-wrapper">
+                        <h1>
+                            <router-link to="/" class="black-text">OClaRy</router-link>
+                        </h1>
+                    </div>
+                    <a href="#name"><span class="white-text name"></span></a>
+                    
                 </div>
             </li>
             <li><router-link to="/" data-target="slide-out" class="sidenav-close" :class="{ 'blue': this.$store.getters.Setor === null }"><i class="material-icons">home</i>Home</router-link> </li>
@@ -61,22 +66,22 @@
         created(){
             switch(this.Setor) {
                 case "escola":
-                    text = "Banana is good!";
+                    
                     break;
                 case "aluno":
-                    text = "Banana is good!";
+                    
                     break;
                 case "planejamento":
-                    text = "I am not a fan of orange.";
+                    
                     break;
                 case "prova":
-                    text = "How you like them apples?";
+                    
                     break;
                 case "presenca":
-                    text = "How you like them apples?";
+                    
                     break;
                 default:
-                    text = "I have never heard of that fruit...";
+                    
             }
         }
     }

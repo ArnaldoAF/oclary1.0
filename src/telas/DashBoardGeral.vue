@@ -1,6 +1,13 @@
 <template>
-  <div>
-    <h1>DashBoard</h1>
+  <div class="container">
+    <div class="card-panel center-align ">
+      <h1>Bem vindo ao <span class="blue-text">OClaRy</span></h1>
+      <h2>
+        <span class="blue-text">O</span>nline  <span class="blue-text">CLA</span>ss dia<span class="blue-text">RY</span>
+      </h2>
+      <router-link to="/escola"  class="btn-large blue "> <span class="valign-wrapper">Começar <i class="material-icons">forward</i></span>  </router-link>
+
+    </div>
   </div>
 </template>
 <script>

@@ -61,7 +61,7 @@
             </div>
 
             <div id="modal1" class="modal" style="overflow: visible !important;">
-                <div class="modal-content row">
+                <div class="modal-content row" >
 
                     <div class="input-field col s4">
                         <input id="data" placeholder="DATA" type="date"  v-model="objProva.data" autofocus required class="datepicker active">
@@ -190,12 +190,12 @@ export default {
     mounted: function() {
         // Jquery para o modal
         $(document).ready(function() {
-            M.AutoInit();
+            //M.AutoInit();
             $(".modal").modal();
             $('select').formSelect();
             $('.datepicker').pickadate();
             $('#conteudo').characterCounter();
-            M.textareaAutoResize($('#conteudo'));
+            //M.textareaAutoResize($('#conteudo'));
             $(document).on("shown.bs.modal", function(e) {
                 $("[autofocus]", e.target).focus();
             });
@@ -467,6 +467,10 @@ export default {
 }
 .modal table {
     width:100%;
+}
+
+#modal1 {
+     overflow:visible !important;
 }
 </style>
 
