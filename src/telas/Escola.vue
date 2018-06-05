@@ -2,7 +2,7 @@
     <div>
     
     <div class="container">
-        <div v-if="loading" class="progress center blue">
+        <div v-if="loading" class="progress center">
             <div class="indeterminate"></div>
         </div>
         <div v-else-if="!loading && escolasArray.length==0">
@@ -14,20 +14,20 @@
             <ul v-else class="collapsible" >
                 <li v-for="escola in escolasArray" class="collection-item active">
                 <div class="collapsible-header">
-                    {{escola.nome}}
+                    <strong>  {{escola.nome}} </strong>
                     
                     <span class=" badge">
                         <span class="badge left" data-badge-caption=""> 
-                            <i class="small material-icons ">group  </i> 
-                            <span class="new badge right" data-badge-caption="">
+                            <i class="small material-icons " :class="[colorText]">group  </i> 
+                            <span class="new badge right" data-badge-caption="" :class="[color]">
                                 {{turmasArray.filter( function(turma){return (turma.idEscola===escola.id);}).length }}
                             </span>
                         </span>
                         <span class="badge left" data-badge-caption="">  </span>
                         
-                        <a class="btn-floating  btn-small modal-trigger" href="#modal2" @click="idEscolaTurma=escola.id" ><i class="material-icons">group_add</i></a>
-                        <a class="btn-floating  btn-small modal-trigger" href="#modal1" @click="EditarEscola(escola)" ><i class="material-icons">edit</i></a>
-                        <a class="btn-floating  btn-small modal-trigger" href="#modal3" @click="EditarEscola(escola)"><i class="material-icons">delete</i></a>
+                        <a class="btn-floating  btn-small modal-trigger " href="#modal2" data-position="bottom" data-tooltip="ADICIONAR TURMA"    @click="idEscolaTurma=escola.id" :class="[color]"><i class="material-icons">group_add</i></a>
+                        <a class="btn-floating  btn-small modal-trigger " href="#modal1" data-position="bottom" data-tooltip="EDITAR"             @click="EditarEscola(escola)" :class="[color]"><i class="material-icons">edit</i></a>
+                        <a class="btn-floating  btn-small modal-trigger " href="#modal3" data-position="bottom" data-tooltip="EXCLUIR"            @click="EditarEscola(escola)" :class="[color]"><i class="material-icons">delete</i></a>
                     </span>
                     
                 </div>
@@ -47,9 +47,10 @@
                         <td> {{turma.nome}} </td>
                         <td> {{turma.disciplina}} </td>
                         <td class="right">
-                            <a class="btn-floating  btn-small modal-trigger" href="#modal2" @click="EditarTurma(turma)" ><i class="material-icons">edit</i></a>
-                            <a class="btn-floating  btn-small modal-trigger" href="#modal4" @click="EditarTurma(turma)"><i class="material-icons">delete</i></a>
-                            <router-link class="btn-floating  btn-small" :to="'/escola/turma/'+turma.id+''" ><i @click="StoreTurma(turma)" class="material-icons">forward</i></router-link>
+                             <router-link class="btn-floating  btn-small " :to="'/escola/turma/'+turma.id+''" :class="[color]" data-position="bottom" data-tooltip="ACESAR TURMA"><i @click="StoreTurma(turma)" class="material-icons">forward</i></router-link>
+                            <a class="btn-floating  btn-small modal-trigger " href="#modal2" data-position="bottom" data-tooltip="EDITAR" @click="EditarTurma(turma)" :class="[color]"><i class="material-icons">edit</i></a>
+                            <a class="btn-floating  btn-small modal-trigger " href="#modal4" data-position="bottom" data-tooltip="EXCLUIR" @click="EditarTurma(turma)" :class="[color]"><i class="material-icons">delete</i></a>
+                           
                         </td>
                         </tr>
                     </tbody>
@@ -168,6 +169,8 @@ export default {
         // Jquery para o modal
             $(document).ready(function() {
             $(".collapsible").collapsible();
+            //$('.tooltipped').tooltip();
+            
             //console.log($(".collapsible").collapsible());
         });
     },
@@ -181,11 +184,13 @@ export default {
     beforeMount: function() {
         $(document).ready(function() {
             $(".collapsible").collapsible();
+            //$('.tooltipped').tooltip();
             //console.log($(".collapsible").collapsible());
         })
     },
     mounted: function() {
         // Jquery para o modal
+        $(".modal").modal();
         $(document).ready(function() {
             $(".collapsible").collapsible();
             $(".modal").modal();
@@ -198,6 +203,8 @@ export default {
     data() {
         return {
             loading: true,
+            color:'blue',
+            colorText:'blue-text',
             // ESCOLA
             escolasArray: [], // é rodada em um for para exibir as escolas no DOM
             nomeEscola: "", // um valor temporario para edição e exclusão
@@ -286,7 +293,7 @@ export default {
             delete this.objTurma.id;
             this.turmaRef.push(this.objTurma);
             this.ResetObjTurma();
-             M.toast({html: 'Turma Criada'})
+            M.toast({html: 'Turma Criada'})
            
         },
         ExcluirTurma(turma) {

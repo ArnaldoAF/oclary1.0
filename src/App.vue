@@ -28,6 +28,7 @@ export default {
     return {
     }
   },
+ 
   mounted: function() {
         // Jquery para o modal
         $(document).ready(function() {

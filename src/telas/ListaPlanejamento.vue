@@ -55,16 +55,16 @@
                     <tbody>
                         <tr v-for="planejamento in PlanejamentoArray" v-if="(FiltroPorAplicacao(planejamento) && FiltroPorMes(planejamento) && FiltroPorPesquisa(planejamento))">
                             <td>{{planejamento.data | formatDate}}</td>
-                            <td class="" style="text-overflow:ellipsis; overflow: hidden;">{{planejamento.conteudo | truncate 5 }}</td>
+                            <td class="" style="text-overflow:ellipsis; overflow: hidden;">{{planejamento.conteudo }}</td>
                             <td >
                                 <i v-if="planejamento.aplicado" class="material-icons green-text">check</i>
                                 <i v-else class="material-icons red-text">clear</i>
                                 
                             </td>
                             <td class="left">
-                                <a class="btn-floating  btn-small modal-trigger" href="#modal1" @click="EditarPlanejamento(planejamento)"><i class="material-icons">edit</i></a>
-                                <a class="btn-floating  btn-small modal-trigger" href="#!" @click="ExcluirPlanejamento(planejamento)"><i class="material-icons">delete</i></a>
-                                <a class="btn-floating  btn-small modal-trigger" href="#!" @click="planejamento.aplicado=!planejamento.aplicado; EditarPlanejamento(planejamento); UpdatePlanejamento(); ">
+                                <a class="btn-floating  btn-small modal-trigger" :class="[color]" href="#modal1" @click="EditarPlanejamento(planejamento)"><i class="material-icons">edit</i></a>
+                                <a class="btn-floating  btn-small modal-trigger" :class="[color]" href="#modal2" @click="EditarPlanejamento(planejamento)"><i class="material-icons">delete</i></a>
+                                <a class="btn-floating  btn-small modal-trigger" :class="[color]" href="#!" @click="AlterarStatus(planejamento)">
                                     <i v-if="!planejamento.aplicado" class="material-icons ">check</i>
                                     <i v-else class="material-icons ">clear</i>
                                 </a>
@@ -81,29 +81,47 @@
                 <a class="btn-floating btn-large red modal-trigger" href="#modal1"> <i class="large material-icons">add</i></a>
             </div>
 
-            <div id="modal1" class="modal">
-                <div class="modal-content">
+            <div id="modal1" class="modal" @keyup.enter="ValidarPlanejamento()">
+                <div class="modal-content row ">
 
-                    <div class="input-field ">
+                    <div class="input-field col s6">
                         <input id="data" placeholder="DATA" type="date" v-model="objPlanejamento.data" autofocus required class="datepicker active">
                         <label class="active" for="data">DATA</label>
                     </div>
                     
-                    <div class="input-field ">
-                        <textarea id="conteudo" placeholder="CONTEUDO"  v-model="objPlanejamento.conteudo" autofocus required class="validate active materialize-textarea"></textarea>
+
+                    <div class="input-field col s12">
+                        <textarea id="conteudo" placeholder="CONTEUDO"  v-model="objPlanejamento.conteudo" autofocus required class=" active materialize-textarea"></textarea>
                         <label class="active" for="conteudo">Conteúdo</label>
                     </div>
 
-                    <label>
-                        <input type="checkbox" class="filled-in"  v-model="objPlanejamento.aplicado"/>
+                    
+                    
+                    <label class="col s12 center ">
+                        <input type="checkbox" class="filled-in valign-wrapper "  v-model="objPlanejamento.aplicado"/>
                         <span>Aplicado</span>
                     </label>
+                    
+                    
 
                 </div>
                 <div class="modal-footer">
                     <button class="btn modal-action modal-close red" @click="ResetObjPlanejamento()">CANCELAR</button>
-                    <button class="btn modal-action modal-close green" v-if="objPlanejamento.id===''" @click="InserirPlanejamento()">INCLUIR</button>
-                    <button class="btn modal-action modal-close green" v-else @click="UpdatePlanejamento()">EDITAR</button>
+                    <button class="btn modal-action  green" @click="ValidarPlanejamento()">
+                        <a class="white-text" v-if="objPlanejamento.id === ''">INCLUIR</a> 
+                        <a class="white-text" v-else>EDITAR</a> 
+                    </button>
+                </div>
+            </div>
+
+            <div id="modal2" class="modal" @keyup.enter="ExcluirPlanejamento(objPlanejamento)">
+                <div class="modal-content">
+                    <h5>Deseja excluir o planejamento do dia {{objPlanejamento.data | formatDate}} ?</h5>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn modal-action modal-close red" @click="ResetObjPlanejamento()">CANCELAR</button>
+                    <button class="btn modal-action green" @click="ExcluirPlanejamento(objPlanejamento)">EXCLUIR</button>
+                    
                 </div>
             </div>
 
@@ -159,6 +177,9 @@ export default {
     data() {
         return { 
             loading: true,
+            color:'blue',
+            colorText:'blue-text',
+
             pesquisa:'',
             filtroAplicado:1,
             filtroMes:0,
@@ -170,7 +191,9 @@ export default {
                 data:'',
                 conteudo:'',
                 aplicado:false
-            }
+            },
+
+            oldData:""
         }
     },
     watch:{
@@ -199,18 +222,24 @@ export default {
             }
             
         },
+
+        // CRUD
         InserirPlanejamento() {
             console.log(this.objPlanejamento.data);
             delete this.objPlanejamento.id;
             this.PlanejamentoRef.push(this.objPlanejamento);
             console.log(this.objPlanejamento.data);
             this.ResetObjPlanejamento();
+            M.toast({html: 'Planejamento Inserido'});
         },
         ExcluirPlanejamento(planejamento) {
             this.PlanejamentoRef.child(planejamento.id).remove();
+            $("#modal2").modal("close");
+            M.toast({html: 'Planejamento Excluido'});
         },
         EditarPlanejamento(planejamento) {
             this.objPlanejamento = Object.assign({},planejamento);
+            this.oldData = this.objPlanejamento.data;
         },
         UpdatePlanejamento() {
             console.log("antes update");
@@ -218,10 +247,51 @@ export default {
             delete this.objPlanejamento.id;
             this.PlanejamentoRef.child(id)
                 .update(this.objPlanejamento);
-            console.log("antes update");
+            console.log("depois update");
             this.ResetObjPlanejamento();
+            M.toast({html: 'Planejamento Atualizado'});
+        },
+        AlterarStatus(planejamento) {
+            planejamento.aplicado=!planejamento.aplicado; 
+            this.EditarPlanejamento(planejamento); 
+            this.UpdatePlanejamento(); 
+            //M.toast({html: 'Planejamento Atualizado'})
+        },
+        ValidarPlanejamento() {
+            var mensagem = [];
+
+            if (this.objPlanejamento.data === "") mensagem.push("Preencha Data!");
+
+            const Plan = this.PlanejamentoArray.find(
+                plan => plan.data === this.objPlanejamento.data
+            );
+            console.log("Plan!=null = "+ (Plan!=null));
+
+            if (Plan!=null) {
+                if(this.objPlanejamento.id==='') mensagem.push("Data já existente!");
+                else if(Plan.data !== this.oldData) mensagem.push("Data já existente!");
+                
+                console.log("this.objPlanejamento.id==='' = "+ (this.objPlanejamento.id===''));
+                console.log("Plan.data !== this.oldData = "+ (Plan.data !== this.oldData));
+            }
+
+
+            if(mensagem.length>0){
+                for (var i=0; i<mensagem.length; i++) {
+                    M.toast({html: mensagem[i]})
+                }
+            }
+            else{
+                if (this.objPlanejamento.id==="") this.InserirPlanejamento();
+                else this.UpdatePlanejamento();
+                console.log("this.objPlanejamento.id==='' = "+ (this.objPlanejamento.id===''));
+                
+                $("#modal1").modal("close");
+                this.oldData="";
+            }
         },
 
+        // SORT
         SortByDate() {
             
             this.PlanejamentoArray.sort(function(a,b) {
@@ -232,6 +302,7 @@ export default {
             
         },
 
+        // FILTROS 
         FiltroPorAplicacao(planejamento) {
             if (this.filtroAplicado==2 ) {
                 if (planejamento.aplicado == true) return true;
@@ -289,9 +360,11 @@ export default {
 
         this.PlanejamentoRef.on("child_changed", snapshot => {
             const Planejamento = this.PlanejamentoArray.find(
-                planejamento => planejamento.id === snapshot.key
+                plan => plan.id === snapshot.key
             );
+            console.log("Planejamento == null  =  "+ (Planejamento == null));
             console.log("CHILD_CHANGED EVENT");
+            
             Planejamento.id = snapshot.key;
             Planejamento.data = snapshot.val().data;
             Planejamento.conteudo = snapshot.val().conteudo;

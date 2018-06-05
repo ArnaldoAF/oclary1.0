@@ -49,7 +49,7 @@
                         <td class="left">
                             <a class="btn-floating  btn-small modal-trigger" href="#modal2" @click="EditarProva(prova); AtribuirNota()"><i class="material-icons">exposure_plus_1</i></a>
                             <a class="btn-floating  btn-small modal-trigger" href="#modal1" @click="EditarProva(prova)"><i class="material-icons">edit</i></a>
-                            <a class="btn-floating  btn-small modal-trigger" href="#!" @click="ExcluirProva(prova)"><i class="material-icons">delete</i></a>
+                            <a class="btn-floating  btn-small modal-trigger" href="#modal3" @click="EditarProva(prova)"><i class="material-icons">delete</i></a>
                             
                         </td>
                     </tr>
@@ -60,7 +60,7 @@
                 <a class="btn-floating btn-large  red modal-trigger" href="#modal1" @click="ResetObjProva()"> <i class="large material-icons">add</i></a>
             </div>
 
-            <div id="modal1" class="modal" style="overflow: visible !important;">
+            <div id="modal1" class="modal" style="overflow: visible !important;" @keyup.enter="ValidarProva()">
                 <div class="modal-content row" >
 
                     <div class="input-field col s4">
@@ -99,8 +99,11 @@
                 </div>
                 <div class="modal-footer">
                     <button class="btn modal-action modal-close red" @click="ResetObjProva()">CANCELAR</button>
-                    <button class="btn modal-action modal-close green" v-if="objProva.id===''" @click="InserirProva()">INCLUIR</button>
-                    <button class="btn modal-action modal-close green" v-else @click="UpdateProva()">EDITAR</button>
+                   
+                    <button class="btn modal-action  green" @click="ValidarProva()">
+                        <a class="white-text" v-if="objProva.id === ''">INCLUIR</a> 
+                        <a class="white-text" v-else>EDITAR</a> 
+                    </button>
                 </div>
             </div>
 
@@ -153,6 +156,17 @@
                 <div class="modal-footer">
                     <button class="btn modal-action modal-close red" @click="modalNota=null;">CANCELAR</button>
                     <button class="btn modal-action modal-close green" @click="UpdateNota()">EDITAR</button>
+                </div>
+            </div>
+
+            <div id="modal3" class="modal" @keyup.enter="ExcluirProva(objProva)">
+                <div class="modal-content">
+                    <h5>Deseja excluir a prova {{objProva.nome}} ?</h5>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn modal-action modal-close red" @click="ResetObjProva()">CANCELAR</button>
+                    <button class="btn modal-action green" @click="ExcluirProva(objProva)">EXCLUIR</button>
+                    
                 </div>
             </div>
 
@@ -239,7 +253,10 @@ export default {
             //variaveis da nota
             modalNota:null, //esse é o objeto das notas, depois é atribuido no objeto nas notas originais
             editNota:null,
-            novaNota:0
+            novaNota:0,
+
+            oldNome:"",
+            oldData:""
 
         }
     },
@@ -303,6 +320,7 @@ export default {
              });
 
             this.ResetObjProva();
+            M.toast({html: 'Prova Inserida'});
         },
         ExcluirProva(prova) {
             this.AlunosArray.forEach(aluno => {
@@ -312,11 +330,16 @@ export default {
                     .child(prova.id).remove();
             });
             this.ProvaRef.child(prova.id).remove();
+            $("#modal2").modal("close");
+            M.toast({html: 'Prova Excluida'});
         },
         EditarProva(prova) {
              
             
             this.objProva = Object.assign({},prova);
+            this.oldNome=this.objProva.nome;
+            this.oldData=this.objProva.data;
+
             $('#selectPeso').val(this.objProva.peso);
             $('#selectPeso').formSelect();
             $('#conteudo').val(this.objProva.conteudo);
@@ -354,6 +377,45 @@ export default {
 
             console.log("depois update");    
             this.ResetObjProva();
+            M.toast({html: 'Prova Atualizada'});
+        },
+        ValidarProva() {
+            var mensagem=[];
+
+            if (this.objProva.nome === "") mensagem.push("Preencha Nome!");
+
+            const Prova = this.ProvaArray.find(
+                prova => (prova.nome === this.objProva.nome ||
+                        prova.data === this.objProva.data)
+            );
+
+            if(Prova!=null) {
+                if (this.objProva.id === '') {
+                    if (Prova.nome === this.objProva.nome) mensagem.push("Nome já existe!");
+                    if (Prova.data === this.objProva.data && this.objProva.data!=="") mensagem.push("Data já cadastrada");
+                }
+                else {
+                    if(Prova.nome !== this.oldNome) mensagem.push("Nome já existe!");
+                    if(Prova.data !== this.oldData && this.objProva.data!=="") mensagem.push("Data já cadastrada");
+                }
+            }
+            console.log("Prova.nome !== this.oldNome = "+ (Prova.nome !== this.oldNome));
+
+            if(mensagem.length>0) {
+                for (var i=0; mensagem.length; i++) {
+                    M.toast({html: mensagem[i]})
+                }
+            }
+            else {
+                if (this.objProva.id==="") this.InserirProva();
+                else this.UpdateProva();
+
+                $("#modal1").modal("close");
+                this.oldNome="";
+                this.oldData="";
+            }
+
+
         },
 
         AtribuirNota() {
@@ -451,6 +513,7 @@ export default {
 }
 </script>
 <style>
+
 .modal { width: 75% !important ; max-height: 100% !important }
 .modal tbody {
     display:block;

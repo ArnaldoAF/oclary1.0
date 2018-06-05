@@ -9,9 +9,11 @@
             <div class="row">
                 <div class="input-field col s6">
                     <i class="material-icons prefix">search</i>
-                    <input id="icon_prefix" type="text" class="validate" v-model="pesquisa">
+                    <input id="icon_prefix" type="text"  v-model="pesquisa">
                     <label for="icon_prefix">Aluno ou Codigo</label>
+                    
                 </div>
+                <a v-if=false class=" btn-flat blue-text valign-wrapper " @click="pesquisa=''"><i class="material-icons ">clear</i></a>
             </div>
 
             <div class="responsive-table table-status-sheet">
@@ -36,10 +38,10 @@
                             <td>{{aluno.codigo}}</td>
                             <td>{{aluno.nome}}</td>
                             <td class="left">
-                                <a class="btn-floating  btn-small modal-trigger " href="#modal3" @click="EditarAluno(aluno); AtribuirPresenca();"><i class="material-icons">assignment_turned_in</i></a>
-                                <a class="btn-floating  btn-small modal-trigger tooltipped" data-position="bottom"  @click="EditarAluno(aluno); AtribuirNota()" data-tooltip="NOTAS" href="#modal2" ><i class="material-icons">exposure_plus_1</i></a>
-                                <a class="btn-floating  btn-small modal-trigger" href="#modal1" @click="EditarAluno(aluno)"><i class="material-icons">edit</i></a>
-                                <a class="btn-floating  btn-small modal-trigger" href="#!" @click="ExcluirAluno(aluno)"><i class="material-icons">delete</i></a>
+                                <a class="btn-floating  btn-small modal-trigger " :class="[color]" href="#modal3" data-position="bottom" data-tooltip="PRESENÇA"  @click="EditarAluno(aluno); AtribuirPresenca(); " ><i class="material-icons">assignment_turned_in</i></a>
+                                <a class="btn-floating  btn-small modal-trigger " :class="[color]" href="#modal2" data-position="bottom" data-tooltip="NOTAS"     @click="EditarAluno(aluno); AtribuirNota()"   ><i class="material-icons">exposure_plus_1</i></a>
+                                <a class="btn-floating  btn-small modal-trigger " :class="[color]" href="#modal1" data-position="bottom" data-tooltip="EDITAR"    @click="EditarAluno(aluno)"><i class="material-icons">edit</i></a>
+                                <a class="btn-floating  btn-small modal-trigger " :class="[color]" href="#modal4" data-position="bottom" data-tooltip="EXCLUIR"   @click="EditarAluno(aluno)"><i class="material-icons">delete</i></a>
                                 
                             </td>
 
@@ -53,25 +55,27 @@
                 <a class="btn-floating btn-large red modal-trigger" href="#modal1" @click="ResetObjAluno()"> <i class="large material-icons">add</i></a>
             </div>
 
-            <div id="modal1" class="modal">
-                <div class="modal-content">
-                    <div class="input-field ">
-                        <input id="last_name" placeholder="CODIGO DO ALUNO" type="text" v-model="objAluno.codigo" autofocus required class="validate active">
-                        <label class="active" for="last_name">Codigo do Aluno</label>
+            <div id="modal1" class="modal" @keyup.enter="ValidarAluno()">
+                <div class="modal-content row">
+                    <div class="input-field col s3">
+                        <input id="last_name" placeholder="CODIGO DO ALUNO" type="text" v-model="objAluno.codigo" autofocus required class=" active">
+                        <label class="active" for="last_name">Codigo do Aluno *</label>
                     </div>
-                    <div class="input-field ">
-                        <input id="last_name" placeholder="NOME DO ALUNO" type="text" v-model="objAluno.nome" autofocus required class="validate active">
-                        <label class="active" for="last_name">Nome do Aluno</label>
+                    <div class="input-field col s9">
+                        <input id="last_name" placeholder="NOME DO ALUNO" type="text" v-model="objAluno.nome" autofocus required class=" active">
+                        <label class="active" for="last_name">Nome do Aluno *</label>
                     </div>
                 </div>
                 <div class="modal-footer">
                     <button class="btn modal-action modal-close red" @click="ResetObjAluno()">CANCELAR</button>
-                    <button class="btn modal-action modal-close green" v-if="objAluno.id===''" @click="InserirAluno()">INCLUIR</button>
-                    <button class="btn modal-action modal-close green" v-else @click="UpdateAluno()">EDITAR</button>
+                    <button class="btn modal-action  green" @click="ValidarAluno()">
+                        <a class="white-text" v-if="objAluno.id === ''">INCLUIR</a> 
+                        <a class="white-text" v-else>EDITAR</a> 
+                    </button>
                 </div>
             </div>
 
-            <div id="modal2" class="modal">
+            <div id="modal2" class="modal" @keyup.enter="UpdateNota()">
                 <div>
                     <div class="modal-content">
                         <h3>Média: {{media | formatNota}} </h3>
@@ -84,17 +88,17 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr v-for="prova in modalNota">
+                                <tr v-for="(prova,key, index) in modalNota">
                                     <td>{{prova.prova}}</td>
                                     <td>{{prova.peso}}0%</td>
                                     <td>
                                         
                                         <div v-if="(prova !== editNota)">
                                             {{prova.nota | formatNota}} 
-                                            <a class="btn-floating  btn-small"  href="#!" @click="EditarNota(prova)"><i class="material-icons">edit</i></a>
+                                            <a class="btn-floating  btn-small"  href="#!" @click="EditarNota(prova, index)"><i class="material-icons">edit</i></a>
                                         </div>
                                         <div v-else class="row">
-                                            <input id="icon_prefix" v-model="novaNota" type="text" class="validate col s2">
+                                            <input :id="'input_nota'+index" :ref="'input_nota'+index" :autofocus=true @keyup.enter.stop="ValidarNota(index)" v-model="novaNota" type="text" class=" col s2">
                                             <a class="btn-floating  btn-small" href="#!" @click="prova.nota=Number(novaNota);editNota=null;CalcularMedia();"><i class="material-icons">done</i></a>
                                             <a class="btn-floating  btn-small" href="#!" @click="editNota=null"><i class="material-icons">clear</i></a>
                                         </div>
@@ -111,7 +115,7 @@
                 </div>
             </div>
 
-            <div id="modal3" class="modal">
+            <div id="modal3" class="modal" @keyup.enter="UpdatePresenca();">
                 <div>
                     <div class="modal-content">
                         <h3>Porcentagem: {{porcetagemPre | formatNota}}% </h3>
@@ -143,6 +147,17 @@
                 </div>
             </div>
 
+            <div id="modal4" class="modal" @keyup.enter="ExcluirAluno(objAluno); ">
+                <div class="modal-content">
+                    <h5>Deseja excluir o aluno {{objAluno.nome}} ? Essa ação irá excluir notas e presenças!</h5>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn modal-action modal-close red" @click="ResetObjAluno()">CANCELAR</button>
+                    <button class="btn modal-action green " @click="ExcluirAluno(objAluno)">EXCLUIR</button>
+                    
+                </div>
+            </div>
+
         </div>
 
         
@@ -152,6 +167,7 @@
 <script>
 import Database from "../firebase.js";
 import {mapMutations, mapGetters} from 'vuex';
+
 
 export default {
     computed:{
@@ -173,17 +189,20 @@ export default {
         }
     },
     
-    beforeUpdate: function() {
+    updated: function() {
         // Jquery para o modal
         $(document).ready(function() {
-            $(".collapsible").collapsible();
-            $('.tooltipped').tooltip();
-             $('select').formSelect();
+            console.log("update");
+            //$(".collapsible").collapsible();
+            //$('.tooltipped').tooltip();
+            //$('select').formSelect();
+            //$(".modal").modal();
         });
     },
     mounted: function() {
         // Jquery para o modal
         $(document).ready(function() {
+            console.log("mounted");
             $(".collapsible").collapsible();
             $(".modal").modal();
             $(document).on("shown.bs.modal", function(e) {
@@ -216,6 +235,8 @@ export default {
         return {
             loading: true,
             pesquisa:'',
+            color:'blue',
+            colorText:'blue-text',
             codeOrdem: true,
             nomeOrdem: true,
 
@@ -247,7 +268,9 @@ export default {
             
             modalPresenca: null,
 
-            alunosCountLocal:this.$store.getters.TurmaAtual.alunosCount
+            alunosCountLocal:this.$store.getters.TurmaAtual.alunosCount,
+
+            oldCodigo:"0"
         }
     },
     filters:{
@@ -269,6 +292,10 @@ export default {
         nomeOrdem: function (val) {
             this.SortByName();
             
+        },
+        loading: function (val) {
+            console.log("watch - "+val);
+            $(".modal").modal();
         }
     },
     methods: {
@@ -282,6 +309,8 @@ export default {
             };
             this.media=0
         },
+
+        // ALUNO
         InserirAluno() {
             console.log("Inserir Aluno");
             //console.log(this.objAluno);
@@ -337,6 +366,7 @@ export default {
                 this.alunosCountLocal + 1
             );
             this.alunosCountLocal++;
+            M.toast({html: 'Aluno Criado'})
         },
         ExcluirAluno(aluno) {
 
@@ -360,11 +390,14 @@ export default {
             );
             this.alunosCountLocal--;
             this.AlunosRef.child(aluno.id).remove();
+            $("#modal4").modal("close");
+            M.toast({html: 'Aluno Excluido'})
             
         },
         EditarAluno(aluno) {
             //this.media=0;
             this.objAluno = Object.assign({},aluno);
+            this.oldCodigo=this.objAluno.codigo;
             console.log(this.objAluno.nome);
             //console.log(this.media);
             
@@ -433,22 +466,91 @@ export default {
                 .update(this.objAluno);
             
             this.ResetObjAluno();
+             M.toast({html: 'Aluno Editado'});
         },
+        ValidarAluno() {
+            var mensagem=[];
+            var valido=false;
+            if (this.objAluno.codigo=="") mensagem.push("Codigo Vazio");
+            if (this.objAluno.nome=="") mensagem.push("Nome Vazio");
 
+            const Aluno = this.AlunosArray.find(
+                aluno => aluno.codigo===this.objAluno.codigo
+            );
+
+            if ((Aluno!=null && this.objAluno.id==='')) mensagem.push("Codigo já usado");
+            if (Aluno!=null) {
+                if (Aluno.codigo!==this.oldCodigo) mensagem.push("Codigo já usado");
+                 console.log((Aluno.codigo==this.oldCodigo));
+                console.log("Aluno.codigo "+(Aluno.codigo));
+                console.log("this.oldCodigo "+(this.oldCodigo));
+            }
+           
+            
+
+            if(mensagem.length>0){
+                for (var i=0; i<mensagem.length; i++) {
+                    M.toast({html: mensagem[i]})
+                }
+            }
+            else {
+                if (this.objAluno.id==='') this.InserirAluno();
+                else this.UpdateAluno();
+                $("#modal1").modal("close");
+                this.oldCodigo="";
+            }
+
+           
+            
+        },  
+
+        // NOTA
         AtribuirNota() {
             this.modalNota = JSON.parse(JSON.stringify(this.objAluno.notas));
             this.CalcularMedia();
         },
-        EditarNota(nota) {
+        EditarNota(nota,index) {
             this.editNota = nota;
             this.novaNota = nota.nota;
             this.CalcularMedia();
+            $("#input_nota"+index).focus();
+            document.getElementById("input_nota"+(index)).focus();
         },
         UpdateNota() {
+            M.toast({html: 'Update Nota'});
             this.objAluno.notas = Object.assign({},this.modalNota);
             this.UpdateAluno();
+             $("#modal2").modal("close");
+        },
+        ValidarNota(index) {
+            var mensagem=[];
+            M.toast({html: 'TESTE'});
+            if (this.novaNota=="") this.novaNota=0;
+            if (isNaN(this.novaNota)) mensagem.push("Não é numero!");
+
+            if (mensagem.length>0){
+                for (var i=0; i<mensagem.length; i++) {
+                    M.toast({html: mensagem[i]})
+                }
+            }
+            else{
+                this.modalNota[Object.keys(this.modalNota)[index]].nota = Number(this.novaNota);
+                this.editNota=null;
+                this.CalcularMedia();
+                //this.EditarNota(this.modalNota[Object.keys(this.modalNota)[index+1]] ? this.modalNota[Object.keys(this.modalNota)[index+1]] : null);
+                if (this.modalNota[Object.keys(this.modalNota)[index+1]]) {
+                    this.EditarNota(this.modalNota[Object.keys(this.modalNota)[index+1]]);
+                    $("#input_nota"+(index)).focus();
+                    document.getElementById("input_nota"+(index)).focus();
+                }
+                else $("#modal2").focus();
+               
+            }
+
+            //prova.nota=Number(novaNota);editNota=null;CalcularMedia();
         },
 
+        // PRESENÇA
         AtribuirPresenca() {
             this.modalPresenca = JSON.parse(JSON.stringify(this.objAluno.presencas));
             this.CalcularPresenca();
@@ -456,8 +558,12 @@ export default {
         UpdatePresenca(){
             this.objAluno.presencas = Object.assign({},this.modalPresenca);
             this.UpdateAluno();
+            $("#modal3").modal("close");
+            M.toast({html: "Presença Atualizada"});
         },
 
+
+        // CALCULOS
         CalcularMedia(){
             this.media=0;
             for (var nota in this.modalNota) {
@@ -477,7 +583,7 @@ export default {
             
         },
 
-        //metodos para sortear a tabela
+        // SORT
         SortByCode() {
             var bool = this.codeOrdem;
             console.log("SORT BY CODE");
