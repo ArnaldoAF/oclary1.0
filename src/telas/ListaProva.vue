@@ -47,9 +47,9 @@
                         <td>{{prova.nome}}</td>
                         <td>{{prova.peso}}0%</td>
                         <td class="left">
-                            <a class="btn-floating  btn-small modal-trigger" href="#modal2" @click="EditarProva(prova); AtribuirNota()"><i class="material-icons">exposure_plus_1</i></a>
-                            <a class="btn-floating  btn-small modal-trigger" href="#modal1" @click="EditarProva(prova)"><i class="material-icons">edit</i></a>
-                            <a class="btn-floating  btn-small modal-trigger" href="#modal3" @click="EditarProva(prova)"><i class="material-icons">delete</i></a>
+                            <a class="btn-floating  btn-small modal-trigger" href="#modal2" :class="[color]" @click="EditarProva(prova); AtribuirNota()"><i class="material-icons">exposure_plus_1</i></a>
+                            <a class="btn-floating  btn-small modal-trigger" href="#modal1" :class="[color]" @click="EditarProva(prova)"><i class="material-icons">edit</i></a>
+                            <a class="btn-floating  btn-small modal-trigger" href="#modal3" :class="[color]" @click="EditarProva(prova)"><i class="material-icons">delete</i></a>
                             
                         </td>
                     </tr>
@@ -137,8 +137,8 @@
                                         <a class="btn-floating  btn-small"  href="#!" @click="EditarNota(nota)"><i class="material-icons">edit</i></a>
                                     </div>
                                     <div v-else class="row">
-                                        <input id="icon_prefix" v-model="novaNota" type="text" class="validate col s2">
-                                        <a class="btn-floating  btn-small" href="#!" @click="nota.nota=Number(novaNota);editNota=null;"><i class="material-icons">done</i></a>
+                                        <input id="icon_prefix" v-model="novaNota" type="text" @keyup.enter.stop="ValidarNota(nota)" class="validate col s2">
+                                        <a class="btn-floating  btn-small" href="#!" @click="ValidarNota(nota)"><i class="material-icons">done</i></a>
                                         <a class="btn-floating  btn-small" href="#!" @click="editNota=null"><i class="material-icons">clear</i></a>
 
 
@@ -226,6 +226,8 @@ export default {
     data() {
         return {
             loading: true,
+            color:'blue',
+            colorText:'blue-text',
             pesquisa:'',
             filtroMes:0,
             
@@ -330,7 +332,7 @@ export default {
                     .child(prova.id).remove();
             });
             this.ProvaRef.child(prova.id).remove();
-            $("#modal2").modal("close");
+            $("#modal3").modal("close");
             M.toast({html: 'Prova Excluida'});
         },
         EditarProva(prova) {
@@ -382,7 +384,7 @@ export default {
         ValidarProva() {
             var mensagem=[];
 
-            if (this.objProva.nome === "") mensagem.push("Preencha Nome!");
+            if (this.objProva.nome.trim() === "") mensagem.push("Preencha Nome!");
 
             const Prova = this.ProvaArray.find(
                 prova => (prova.nome === this.objProva.nome ||
@@ -398,8 +400,9 @@ export default {
                     if(Prova.nome !== this.oldNome) mensagem.push("Nome já existe!");
                     if(Prova.data !== this.oldData && this.objProva.data!=="") mensagem.push("Data já cadastrada");
                 }
+                console.log("Prova.nome !== this.oldNome = "+ (Prova.nome !== this.oldNome));
             }
-            console.log("Prova.nome !== this.oldNome = "+ (Prova.nome !== this.oldNome));
+            
 
             if(mensagem.length>0) {
                 for (var i=0; mensagem.length; i++) {
@@ -429,6 +432,25 @@ export default {
             this.objProva.notas = Object.assign({},this.modalNota);
 
             this.UpdateProva();
+        },
+        ValidarNota(nota) {
+            var mensagem=[];
+
+            if (this.novaNota=="") this.novaNota=0;
+            if (isNaN(this.novaNota)) mensagem.push("Digite um numero");
+            if (Number(this.novaNota)>15) mensagem.push("Nota muito alta");
+
+            if(mensagem.length>0) {
+                for (var i=0; mensagem.length; i++) {
+                    M.toast({html: mensagem[i]})
+                }
+            }
+            else {
+                nota.nota=Number(this.novaNota);
+                this.editNota=null;
+            }
+
+
         },
 
         SortByDate() {
@@ -498,6 +520,8 @@ export default {
             const Prova = this.ProvaArray.find(
                 prova => prova.id === snapshot.key
             );
+
+            //console.log("Prova = "+ (Prova==null));
 
             Prova.id = snapshot.key;
             Prova.data = snapshot.val().data;
