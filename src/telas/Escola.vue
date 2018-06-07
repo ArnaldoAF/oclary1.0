@@ -81,7 +81,7 @@
             </div>
 
             <!-- FORMULARIO ESCOLA -->
-            <div id="modal1" class="modal" @keyup.enter="VerificarEscola()">
+            <div id="modal1" class="modal" @keyup.enter="ValidarEscola()">
                 <div class="modal-content">
                     <div class="input-field ">
                         <input id="last_name" placeholder="NOME DA ESCOLA" type="text" v-model="nomeEscola" autofocus required="" aria-required="true" class="validate active">
@@ -92,7 +92,7 @@
                 <div class="modal-footer">
                     <button class="btn modal-action modal-close red" @click="nomeEscola=''; EditingEscola=null">CANCELAR</button>
                     
-                    <button class="btn modal-action  green" @click="VerificarEscola()">
+                    <button class="btn modal-action  green" @click="ValidarEscola()">
                         <a class="white-text" v-if="EditingEscola===null">INCLUIR</a> 
                         <a class="white-text" v-else>EDITAR</a> 
                     </button>
@@ -101,7 +101,7 @@
             </div>
 
             <!-- FORMULARIO TURMA -->
-            <div id="modal2" class="modal" @keyup.enter="VerificarTurma()">
+            <div id="modal2" class="modal" @keyup.enter="ValidarTurma()">
                 <div class="modal-content">
                     <div class="input-field ">
                         <input id="last_name" placeholder="NOME DA TURMA" type="text" v-model="objTurma.nome" autofocus class="validate">
@@ -115,7 +115,7 @@
                 <div class="modal-footer">
                     <button class="btn modal-action modal-close red" @click="ResetObjTurma()">CANCELAR</button>
                     
-                    <button class="btn modal-action  green" @click="VerificarTurma()">
+                    <button class="btn modal-action  green" @click="ValidarTurma()">
                         <a class="white-text" v-if="objTurma.id === ''">INCLUIR</a> 
                         <a class="white-text" v-else>EDITAR</a> 
                     </button>
@@ -226,7 +226,9 @@ export default {
                 alunosCount:0
             },
 
-            turmaRef: Database.ref("turmas")
+            turmaRef: Database.ref("turmas"),
+
+            oldNome:""
         };
     },
     methods: {
@@ -256,6 +258,7 @@ export default {
         EditarEscola(escola) {
             this.EditingEscola = escola;
             this.nomeEscola = escola.nome;
+            this.oldNome=escola.nome;
         },
         UpdateEscola() {
             this.escolasRef
@@ -266,22 +269,32 @@ export default {
             
              M.toast({html: 'Escola Editada'})
         },
-        VerificarEscola() {
+        ValidarEscola() {
+            var mensagem=[];
+
             // verificações
-            if(this.nomeEscola=="") 
-            { 
-                M.toast({html: 'Nome de Escola Vazio'})
-                return 0;
-            }
+            if(this.nomeEscola.trim() == "") mensagem.push("Preencha Nome!");
             const Escola = this.escolasArray.find(
                 escola => escola.nome === this.nomeEscola
             );
 
-            if(Escola!=null) M.toast({html: 'Escola já existe'})
-            else{
+            if(Escola!=null) {
+                if(this.EditingEscola.id==='') mensagem.push("Escola já exixte!");
+                else if(Escola.nome !== this.oldNome) mensagem.push("Data já existente!");
+
+            }
+
+            if(mensagem.length>0) {
+                for (var i=0; mensagem.length; i++) {
+                    M.toast({html: mensagem[i]})
+                }
+            }
+            else {
                 if(this.EditingEscola===null) this.InserirEscola();
                 else this.UpdateEscola();
+
                 $("#modal1").modal("close");
+                this.oldNome="";
             }
 
             
@@ -316,7 +329,7 @@ export default {
             this.ResetObjTurma();
             M.toast({html: 'Turma Editada'})
         },
-        VerificarTurma(){
+        ValidarTurma(){
             if(this.objTurma.nome=="" && this.objTurma.disciplina=="") 
             { 
                 M.toast({html: 'Nome e disciplina estão vazios'})

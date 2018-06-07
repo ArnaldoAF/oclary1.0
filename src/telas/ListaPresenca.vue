@@ -40,10 +40,9 @@
                     <tbody>
                         <tr v-for="presenca in PresencaArray" v-if="(FiltroPorMes(presenca))">
                             <td>{{presenca.data | formatDate}}</td>
-                            <td><a class="btn-small modal-trigger" href="#modal1" @click="EditarPresenca(presenca)">PRESENÇAS</a></td>
+                            <td><a class="btn-small modal-trigger" :class="[color]" href="#modal1" @click="EditarPresenca(presenca)">PRESENÇAS</a></td>
                             <td class="left">
-                                <a class="btn-floating  btn-small modal-trigger" href="#" @click="ExcluirPresenca(presenca)"><i class="material-icons">delete</i></a>
-                                
+                                <a class="btn-floating  btn-small modal-trigger" :class="[color]" href="#modal2" @click="EditarPresenca(presenca)"><i class="material-icons">delete</i></a> 
                             </td>
                         </tr>
                     </tbody>
@@ -54,7 +53,7 @@
                 <a class="btn-floating btn-large  red modal-trigger" href="#modal1" @click="ResetObjPresenca()"> <i class="large material-icons">add</i></a>
             </div>
 
-            <div id="modal1" class="modal">
+            <div id="modal1" class="modal" @keyup.enter="ValidarPresenca()">
                 <div class="modal-content row">
 
                     <div class="input-field col s4">
@@ -77,7 +76,7 @@
                                     <td>{{presenca.nome_aluno}}</td>
                                     <td>
                                         <label>
-                                            <input type="checkbox" v-model="presenca.presenca" class="filled-in"/>
+                                            <input type="checkbox"  v-model="presenca.presenca" class="filled-in"/>
                                             <span></span>
                                         </label>
                                     </td>
@@ -88,8 +87,22 @@
                 </div>
                 <div class="modal-footer">
                     <button class="btn modal-action modal-close red" @click="ResetObjPresenca()">CANCELAR</button>
-                    <button class="btn modal-action modal-close green" v-if="objPresenca.id===''" @click="InserirPresenca()">INCLUIR</button>
-                    <button class="btn modal-action modal-close green"  v-else @click="UpdatePresenca()">EDITAR</button>
+                    
+                    <button class="btn modal-action  green" @click="ValidarPresenca()">
+                        <a class="white-text" v-if="objPresenca.id === ''">INCLUIR</a> 
+                        <a class="white-text" v-else>EDITAR</a> 
+                    </button>
+                </div>
+            </div>
+
+            <div id="modal2" class="modal" @keyup.enter="ExcluirPresenca(objPresenca)">
+                <div class="modal-content">
+                    <h5>Deseja excluir a entrada de presença do dia do dia {{objPresenca.data | formatDate}} ?</h5>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn modal-action modal-close red" @click="ResetObjPresenca">CANCELAR</button>
+                    <button class="btn modal-action green" @click="ExcluirPresenca(objPresenca)">EXCLUIR</button>
+                    
                 </div>
             </div>
 
@@ -148,6 +161,9 @@ export default {
     data() {
         return {
             loading: true,
+            color:'blue',
+            colorText:'blue-text',
+
             pesquisa:'',
             filtroMes:0,
 
@@ -162,6 +178,8 @@ export default {
             // Carregando Alunos
             AlunosRef: Database.ref("alunos").child(this.$store.getters.TurmaAtual.id),
             AlunosArray:[],
+
+            oldData:""
         }
     },
     filters: {
@@ -211,6 +229,7 @@ export default {
              });
 
             this.ResetObjPresenca();
+            M.toast({html: 'Presenças Inseridas'});
         },
         ExcluirPresenca(presenca) {
             this.AlunosArray.forEach(aluno => {
@@ -221,10 +240,13 @@ export default {
             });
             
             this.PresencaRef.child(presenca.id).remove();
+            
+            M.toast({html: 'Presenças Excluidas'});
+            $("#modal2").modal("close");
         },
         EditarPresenca(presenca) {
             this.objPresenca = Object.assign({}, presenca);
-
+            this.oldData = this.objPresenca.data;
         },
         UpdatePresenca() {
             
@@ -247,6 +269,38 @@ export default {
                 .update(this.objPresenca);
             
             this.ResetObjPresenca();
+            
+            M.toast({html: 'Presenças Editadas'});
+        },
+        ValidarPresenca(){
+            var mensagem = [];
+
+            if (this.objPresenca.data === "") mensagem.push("Preencha Data!");
+
+            const Pres = this.PresencaArray.find(
+                pres => pres.data === this.objPresenca.data
+            );
+            //console.log("Plan!=null = "+ (Plan!=null));
+
+            if (Pres!=null) {
+                if(this.objPresenca.id==='') mensagem.push("Data já existente!");
+                else if(Pres.data !== this.oldData) mensagem.push("Data já existente!");
+                
+            }
+
+
+            if(mensagem.length>0){
+                for (var i=0; i<mensagem.length; i++) {
+                    M.toast({html: mensagem[i]})
+                }
+            }
+            else{
+                if (this.objPresenca.id==="") this.InserirPresenca();
+                else this.UpdatePresenca();
+
+                $("#modal1").modal("close");
+                this.oldData="";
+            }
         },
 
         SortByDate() {
