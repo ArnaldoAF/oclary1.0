@@ -69,7 +69,7 @@
                     </div>
                     
                     <div class="input-field col s4">
-                        <textarea id="nome" placeholder="NOME"  v-model="objProva.nome" autofocus required class="validate active materialize-textarea"></textarea>
+                        <input id="nome" placeholder="NOME" type="text" v-model="objProva.nome" autofocus required class=" active materialize-textarea"></input>
                         <label class="active" for="conteudo">Nome</label>
                     </div>
 
@@ -91,7 +91,7 @@
                     </div>
 
                     <div class="input-field col s12 ">
-                        <textarea id="conteudo" placeholder="CONTEUDO"  v-model="objProva.conteudo" autofocus required class="validate active materialize-textarea"></textarea>
+                        <textarea id="conteudo" placeholder="CONTEUDO"  @keyup.enter.stop="" v-model="objProva.conteudo" autofocus required class="validate active materialize-textarea"></textarea>
                         <label class="active" for="conteudo">Conteúdo</label>
                     </div>
                     

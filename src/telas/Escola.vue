@@ -74,7 +74,7 @@
             </ul>
 
             <!-- BOTÃO QUE ATIVA O FORMULARIO -->
-            <div v-if="!loading" class="fixed-action-btn" @click="nomeEscola=''; EditingEscola=null">
+            <div v-if="!loading" class="fixed-action-btn" @click="nomeEscola=''; objEscola=null">
                 <a class="btn-floating btn-large red modal-trigger" href="#modal1">
                 <i class="large material-icons">add</i>
                 </a>
@@ -84,16 +84,16 @@
             <div id="modal1" class="modal" @keyup.enter="ValidarEscola()">
                 <div class="modal-content">
                     <div class="input-field ">
-                        <input id="last_name" placeholder="NOME DA ESCOLA" type="text" v-model="nomeEscola" autofocus required="" aria-required="true" class="validate active">
+                        <input id="last_name" placeholder="NOME DA ESCOLA" type="text" v-model="nomeEscola" autofocus required="" aria-required="true" class=" active">
                         <label class="active" for="last_name">Nome da Escola</label>
                         
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button class="btn modal-action modal-close red" @click="nomeEscola=''; EditingEscola=null">CANCELAR</button>
+                    <button class="btn modal-action modal-close red" @click="nomeEscola=''; objEscola=null">CANCELAR</button>
                     
                     <button class="btn modal-action  green" @click="ValidarEscola()">
-                        <a class="white-text" v-if="EditingEscola===null">INCLUIR</a> 
+                        <a class="white-text" v-if="objEscola===null">INCLUIR</a> 
                         <a class="white-text" v-else>EDITAR</a> 
                     </button>
                     
@@ -123,13 +123,13 @@
 
             </div>
         
-            <div id="modal3" class="modal" @keyup.enter="ExcluirEscola(EditingEscola); ">
+            <div id="modal3" class="modal" @keyup.enter="ExcluirEscola(objEscola); ">
                 <div class="modal-content">
                     <h5>Deseja excluir a escola {{nomeEscola}}?</h5>
                 </div>
                 <div class="modal-footer">
-                    <button class="btn modal-action modal-close red" @click="nomeEscola=''; EditingEscola=null">CANCELAR</button>
-                    <button class="btn modal-action green" @click="ExcluirEscola(EditingEscola)">EXCLUIR</button>
+                    <button class="btn modal-action modal-close red" @click="nomeEscola=''; objEscola=null">CANCELAR</button>
+                    <button class="btn modal-action green" @click="ExcluirEscola(objEscola)">EXCLUIR</button>
                     
                 </div>
             </div>
@@ -208,7 +208,7 @@ export default {
             // ESCOLA
             escolasArray: [], // é rodada em um for para exibir as escolas no DOM
             nomeEscola: "", // um valor temporario para edição e exclusão
-            EditingEscola: null, // objeto temporario para edição
+            objEscola: null, // objeto temporario para edição
 
             //escolasRef: Database.ref('escolas').orderByChild('nome').equalTo('Etec'),   // referencia
             escolasRef: Database.ref("escolas"),
@@ -238,7 +238,7 @@ export default {
 
             this.escolasRef.push({ nome: this.nomeEscola });
             this.nomeEscola = "";
-            this.EditingEscola = null;
+            this.objEscola = null;
             
             console.log("insert");
             M.toast({html: 'Escola Inserida'})
@@ -256,16 +256,16 @@ export default {
              M.toast({html: 'Escola Excluida'})
         },
         EditarEscola(escola) {
-            this.EditingEscola = escola;
+            this.objEscola = escola;
             this.nomeEscola = escola.nome;
             this.oldNome=escola.nome;
         },
         UpdateEscola() {
             this.escolasRef
-                .child(this.EditingEscola.id)
+                .child(this.objEscola.id)
                 .update({ nome: this.nomeEscola });
             this.nomeEscola = "";
-            this.EditingEscola = null;
+            this.objEscola = null;
             
              M.toast({html: 'Escola Editada'})
         },
@@ -279,7 +279,7 @@ export default {
             );
 
             if(Escola!=null) {
-                if(this.EditingEscola.id==='') mensagem.push("Escola já exixte!");
+                if(this.objEscola.id==='') mensagem.push("Escola já exixte!");
                 else if(Escola.nome !== this.oldNome) mensagem.push("Data já existente!");
 
             }
@@ -290,7 +290,7 @@ export default {
                 }
             }
             else {
-                if(this.EditingEscola===null) this.InserirEscola();
+                if(this.objEscola===null) this.InserirEscola();
                 else this.UpdateEscola();
 
                 $("#modal1").modal("close");
