@@ -28,9 +28,12 @@ export default {
     return {
     }
   },
- 
+  updated: function() {
+        console.log("ESCOLA - updated");
+  },
   mounted: function() {
         // Jquery para o modal
+        console.log("APP - mounted");
         $(document).ready(function() {
             
             $(".collapsible").collapsible();

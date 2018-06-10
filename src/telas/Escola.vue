@@ -12,64 +12,77 @@
         </div>
             <!-- LISTA DE ESCOLAS -->
             <ul v-else class="collapsible" >
-                <li v-for="escola in escolasArray" class="collection-item active">
-                <div class="collapsible-header">
-                    <strong>  {{escola.nome}} </strong>
-                    
-                    <span class=" badge">
-                        <span class="badge left" data-badge-caption=""> 
-                            <i class="small material-icons " :class="[colorText]">group  </i> 
-                            <span class="new badge right" data-badge-caption="" :class="[color]">
-                                {{turmasArray.filter( function(turma){return (turma.idEscola===escola.id);}).length }}
-                            </span>
-                        </span>
-                        <span class="badge left" data-badge-caption="">  </span>
+                <li v-for="escola in escolasArray" >
+                    <div class="collapsible-header">
+                        <strong>  {{escola.nome}} </strong>
                         
-                        <a class="btn-floating  btn-small modal-trigger " href="#modal2" data-position="bottom" data-tooltip="ADICIONAR TURMA"    @click="idEscolaTurma=escola.id" :class="[color]"><i class="material-icons">group_add</i></a>
-                        <a class="btn-floating  btn-small modal-trigger " href="#modal1" data-position="bottom" data-tooltip="EDITAR"             @click="EditarEscola(escola)" :class="[color]"><i class="material-icons">edit</i></a>
-                        <a class="btn-floating  btn-small modal-trigger " href="#modal3" data-position="bottom" data-tooltip="EXCLUIR"            @click="EditarEscola(escola)" :class="[color]"><i class="material-icons">delete</i></a>
-                    </span>
-                    
-                </div>
-                <div class="collapsible-body">
-                    <table class="highlight">
-                        <!--
-                    <thead>
-                        <tr>
-                            <th>Turma</th>
-                            <th>Disciplina</th>
-                            <th class="right">Ações</th>
-                        </tr>
-                    </thead>
-                    -->
-                    <tbody>
-                        <tr v-for="turma in turmasArray" v-if="turma.idEscola===escola.id">
-                        <td> {{turma.nome}} </td>
-                        <td> {{turma.disciplina}} </td>
-                        <td class="right">
-                             <router-link class="btn-floating  btn-small " :to="'/escola/turma/'+turma.id+''" :class="[color]" data-position="bottom" data-tooltip="ACESAR TURMA"><i @click="StoreTurma(turma)" class="material-icons">forward</i></router-link>
-                            <a class="btn-floating  btn-small modal-trigger " href="#modal2" data-position="bottom" data-tooltip="EDITAR" @click="EditarTurma(turma)" :class="[color]"><i class="material-icons">edit</i></a>
-                            <a class="btn-floating  btn-small modal-trigger " href="#modal4" data-position="bottom" data-tooltip="EXCLUIR" @click="EditarTurma(turma)" :class="[color]"><i class="material-icons">delete</i></a>
-                           
-                        </td>
-                        </tr>
-                    </tbody>
-                    </table>
+                        <span class=" badge">
+                            <span class="badge left" data-badge-caption=""> 
+                                <i class="small material-icons " :class="[colorText]">group  </i> 
+                                <span class="new badge right" data-badge-caption="" :class="[color]">
+                                    {{turmasArray.filter( function(turma){return (turma.idEscola===escola.id);}).length }}
+                                </span>
+                            </span>
+                            <span class="badge left" data-badge-caption="">  </span>
+                            
+                            <a class="btn-floating  btn btn-small modal-trigger " href="#modal2" data-position="bottom" data-tooltip="ADICIONAR TURMA"    @click="idEscolaTurma=escola.id" :class="[color]"><i class="material-icons ">group_add</i></a>
+                            <a class="btn-floating  btn btn-small modal-trigger " href="#modal1" data-position="bottom" data-tooltip="EDITAR"             @click="EditarEscola(escola)" :class="[color]"><i class="material-icons ">edit</i></a>
+                            <a class="btn-floating  btn btn-small modal-trigger " href="#modal3" data-position="bottom" data-tooltip="EXCLUIR"            @click="EditarEscola(escola)" :class="[color]"><i class="material-icons ">delete</i></a>
+                        </span>
+                        
+                    </div>
+                    <div class="collapsible-body">
+                        <table class="highlight">
+                        
+                            <tbody>
+                                <tr v-for="turma in turmasArray" v-if="turma.idEscola===escola.id">
+                                    <td> {{turma.nome}} </td>
+                                    <td> {{turma.disciplina}} </td>
+                                    <td class="right">
+                                        <router-link class="btn-floating  btn-small " :to="'/escola/turma/'+turma.id+''" :class="[color]" data-position="bottom" data-tooltip="ACESAR TURMA"><i @click="StoreTurma(turma)" class="material-icons">forward</i></router-link>
+                                        <a class="btn-floating  btn-small modal-trigger " href="#modal2" data-position="bottom" data-tooltip="EDITAR" @click="EditarTurma(turma)" :class="[color]"><i class="material-icons">edit</i></a>
+                                        <a class="btn-floating  btn-small modal-trigger " href="#modal4" data-position="bottom" data-tooltip="EXCLUIR" @click="EditarTurma(turma)" :class="[color]"><i class="material-icons">delete</i></a>
+                                    
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
 
-                    <ul class="collection hide">
-                        <li v-for="turma in turmasArray" v-if="turma.idEscola===escola.id" class="collection-item">
-                            <div class="container">
-                            {{turma.nome}} - {{turma.disciplina}}
+                        <ul class="collection hide">
+                            <li v-for="turma in turmasArray" v-if="turma.idEscola===escola.id" class="collection-item">
+                                <div class="container">
+                                {{turma.nome}} - {{turma.disciplina}}
 
-                            <a href="#!" class="btn-floating btn-small white"></a>
-                            <a class="btn-floating  btn-small modal-trigger right" href="#modal2" @click="EditarTurma(turma)" ><i class="material-icons">edit</i></a>
-                            <a class="btn-floating  btn-small right" @click="ExcluirTurma(turma)"><i class="material-icons">delete</i></a>
-                            <router-link class="btn-floating  btn-small right" :to="'/escola/turma/'+turma.id+''" ><i @click="StoreTurma(turma)" class="material-icons">forward</i></router-link>
-                            teste
-                            </div>
-                        </li>
-                    </ul>
-                </div>
+                                <a href="#!" class="btn-floating hide btn-small white"></a>
+                                <a class="btn-floating  btn-small modal-trigger right" href="#modal2" @click="EditarTurma(turma)" ><i class="material-icons">edit</i></a>
+                                <a class="btn-floating  btn-small right" @click="ExcluirTurma(turma)"><i class="material-icons">delete</i></a>
+                                <router-link class="btn-floating  btn-small right" :to="'/escola/turma/'+turma.id+''" ><i @click="StoreTurma(turma)" class="material-icons">forward</i></router-link>
+                                teste
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+            </ul>
+
+            <ul class="collapsible hide">
+                <li v-for="escola in escolasArray">
+                    <div class="collapsible-header"><i class="material-icons">filter_drama</i>First</div>
+                    <div class="collapsible-body"><span>Lorem ipsum dolor sit amet.</span></div>
+                </li>
+            </ul>
+            <ul class="collapsible hide">
+                <li>
+                    <div class="collapsible-header"><i class="material-icons">filter_drama</i>First</div>
+                    <div class="collapsible-body"><span>Lorem ipsum dolor sit amet.</span></div>
+                </li>
+                <li>
+                    <div class="collapsible-header"><i class="material-icons">place</i>Second</div>
+                    <div class="collapsible-body"><span>Lorem ipsum dolor sit amet.</span></div>
+                </li>
+                <li>
+                    <div class="collapsible-header"><i class="material-icons">whatshot</i>Third</div>
+                    <div class="collapsible-body"><span>Lorem ipsum dolor sit amet.</span></div>
                 </li>
             </ul>
 
@@ -166,39 +179,61 @@ export default {
         this.$store.commit("Setor","escola");
     },
     beforeUpdate: function() {
+        console.log("ESCOLA - beforeUpdate");
         // Jquery para o modal
-            $(document).ready(function() {
-            $(".collapsible").collapsible();
+            //$(document).ready(function() {
+            //$(".collapsible").collapsible();
             //$('.tooltipped').tooltip();
             
             //console.log($(".collapsible").collapsible());
-        });
+        //});
     },
     updated: function() {
+        console.log("ESCOLA - updated");
         // Jquery para o modal
-            $(document).ready(function() {
-            $(".collapsible").collapsible();
+            ///$(document).ready(function() {
+            //$(".collapsible").collapsible();
             //console.log($(".collapsible").collapsible());
-        });
+        //});
     },
     beforeMount: function() {
-        $(document).ready(function() {
-            $(".collapsible").collapsible();
+        console.log("ESCOLA - beforeMount");
+        //$(document).ready(function() {
+            //$(".collapsible").collapsible();
             //$('.tooltipped').tooltip();
             //console.log($(".collapsible").collapsible());
-        })
+        //})
     },
     mounted: function() {
         // Jquery para o modal
-        $(".modal").modal();
+        console.log("ESCOLA - mounted");
+        /*
+        //$(".modal").modal();
         $(document).ready(function() {
-            $(".collapsible").collapsible();
-            $(".modal").modal();
+            //$(".collapsible").collapsible();
+            //$(".modal").modal();
             $(document).on("shown.bs.modal", function(e) {
                 $("[autofocus]", e.target).focus();
             });
             //console.log($(".collapsible").collapsible());
         });
+        */
+    },
+    watch: {
+        loading: function (val){
+            console.log("wacth loading : "+ val);
+            M.AutoInit();
+            $(document).ready(function() {
+                $(document).on("shown.bs.modal", function(e) {
+                    $("[autofocus]", e.target).focus();
+                });
+            });
+            document.addEventListener('DOMContentLoaded', function() {
+                //var elems = document.querySelectorAll('.modal');
+                //var instances = M.Modal.init(elems, options);
+            });
+        }
+
     },
     data() {
         return {
