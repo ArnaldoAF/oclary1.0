@@ -8,12 +8,12 @@
                         <img style="" src="../img/img1.jpg"> 
                     </div>
                     <div class="valign-wrapper">
-                        <h1 style="font-falily:'Verdana', Geneva, sans-serif;font-weight: bold;text-shadow: 2px 2px black" >
-
-                            <router-link to="/" class="black-text">
-                                <i class="material-icons medium blue-text "  >school</i><a class="red-text">Cla</a><a class="green-text text-darken-2">Ry</a> 
+                        <h1>
+                            <h5>
+                            <router-link to="/">
+                            <img style="width:100%" src="../img/logo.png">
                             </router-link>
-                        </h1>
+                        </h5></h1>
                     </div>
                     <a href="#name"><span class="white-text name"></span></a>
                     

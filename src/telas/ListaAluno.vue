@@ -75,10 +75,10 @@
                 </div>
             </div>
 
-            <div id="modal2" class="modal" @keyup.enter="UpdateNota()">
+            <div id="modal2" class="modal modal-fixed-footer" @keyup.enter="UpdateNota()">
                 <div>
                     <div class="modal-content">
-                        <h3>Média: {{media | formatNota}} </h3>
+                        <h4>{{objAluno.nome}} - Notas </h4>
                         <table>
                             <thead>
                                 <tr>
@@ -110,19 +110,20 @@
                     </div>
                 </div>
                 <div class="modal-footer">
+                    <div class="left"> <h4 >Média: {{media | formatNota}} </h4> </div>
                     <button class="btn modal-action modal-close red" @click="modalNota=null;">CANCELAR</button>
                     <button class="btn modal-action modal-close green" @click="UpdateNota()">EDITAR</button>
                 </div>
             </div>
 
-            <div id="modal3" class="modal" @keyup.enter="UpdatePresenca();">
+            <div id="modal3" class="modal modal-fixed-footer" @keyup.enter="UpdatePresenca();">
                 <div>
                     <div class="modal-content">
-                        <h3>Porcentagem: {{porcetagemPre | formatNota}}% </h3>
+                        <h4>{{objAluno.nome}} - Presença</h4>
                         <table>
                             <thead>
                                 <tr>
-                                    <th>Dia</th>
+                                    <th>Dia </th>
                                     <th>Presença</th>
                                 </tr>
                             </thead>
@@ -142,6 +143,7 @@
                     </div>
                 </div>
                 <div class="modal-footer">
+                    <h4 class="left">Porcentagem: {{porcetagemPre | formatNota}}% </h4>
                     <button class="btn modal-action modal-close red" @click="modalPresenca=null">CANCELAR</button>
                     <button class="btn modal-action modal-close green" @click="UpdatePresenca()">EDITAR</button>
                 </div>

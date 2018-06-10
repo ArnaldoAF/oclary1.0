@@ -155,6 +155,8 @@ export default{
             this.PlanejamentoRef
                 .child(planejamento.id)
                 .update({aplicado : true});
+            
+            M.toast({html: 'Planejamento Aplicado'});
         }
     },
      filters:{
