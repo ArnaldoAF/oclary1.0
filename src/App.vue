@@ -4,7 +4,7 @@
     
     <div class="content">
       <appBreadCrumb></appBreadCrumb>
-      <div class="card-panel">
+      <div class="card-panel" id="contentPanel">
         <router-view></router-view>
       </div>
     </div>
@@ -55,9 +55,15 @@ export default {
 
 <style lang="scss">
 
+#contentPanel {
+  height:87vh;
+  overflow:auto;
+}
+
 tbody {
     display:block;
-    max-height:320px;
+    //max-height:320px;
+    max-height: 55vh;
     overflow:auto;
 }
 thead, tbody tr {
