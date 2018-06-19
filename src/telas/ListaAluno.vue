@@ -1,5 +1,6 @@
 <template>
     <div>
+
         
         <div v-if="loading" class="progress center blue">
             <div class="indeterminate"></div>
@@ -54,6 +55,7 @@
             <div class="fixed-action-btn">
                 <a class="btn-floating btn-large red modal-trigger" href="#modal1" @click="ResetObjAluno()"> <i class="large material-icons">add</i></a>
             </div>
+        </div>
 
             <div id="modal1" class="modal" @keyup.enter="ValidarAluno()">
                 <div class="modal-content row">
@@ -160,7 +162,7 @@
                 </div>
             </div>
 
-        </div>
+        
 
         
 
@@ -213,25 +215,7 @@ export default {
             //console.log($(".collapsible").collapsible());
         });
 
-        // PopularAray de provas com a referencia
-         Database.ref("provas/"+this.$store.getters.TurmaAtual.id).on('child_added', snapshot => {
-             this.ProvasArray.push({
-                 id: snapshot.key,
-                 prova: snapshot.val().nome,
-                 peso: snapshot.val().peso
-                 //nota: snapshot.val().nota
-             })
-         });
-
-         Database.ref("presenca").child(this.$store.getters.TurmaAtual.id).on('child_added', snapshot => {
-            this.PresencaArray.push({...snapshot.val(), id:snapshot.key});
-            this.PresencaArray.sort(function(a, b) {
-                if (a.data > b.data) return 1;
-                if (a.data < b.data) return -1;
-                return 0;
-            });
-            
-        });
+        
     },
     data () {
         return {
@@ -296,8 +280,10 @@ export default {
             
         },
         loading: function (val) {
-            console.log("watch - "+val);
-            $(".modal").modal();
+            console.log("watch ALUNO - "+val);
+            //$(".modal").modal();
+            M.AutoInit( );
+            
         }
     },
     methods: {
@@ -658,9 +644,49 @@ export default {
             //const index = this.escolasArray.indexOf(EscolaEditada)
             //this.escolasArray.splice(index, 1,"snapshot.val().nome");
         });
+
+        // PopularAray de provas com a referencia
+         Database.ref("provas/"+this.$store.getters.TurmaAtual.id).on('child_added', snapshot => {
+             this.ProvasArray.push({
+                 id: snapshot.key,
+                 prova: snapshot.val().nome,
+                 peso: snapshot.val().peso
+                 //nota: snapshot.val().nota
+             })
+         });
+
+         Database.ref("presenca").child(this.$store.getters.TurmaAtual.id).on('child_added', snapshot => {
+            this.PresencaArray.push({...snapshot.val(), id:snapshot.key});
+            this.PresencaArray.sort(function(a, b) {
+                if (a.data > b.data) return 1;
+                if (a.data < b.data) return -1;
+                return 0;
+            });
+            
+        });
     }
 }
 </script>
 <style>
+.modal { width: 75% !important ; max-height: 100% !important }
+.modal tbody {
+    display:block;
+    height:320px;
+    overflow:auto;
+}
+.modal thead, .modal tbody tr {
+    display:table;
+    width:100%;
+    table-layout:fixed;
+}
+.modal thead {
+    width: calc( 100% - 1em )
+}
+.modal table {
+    width:100%;
+}
 
+#modal1 {
+     overflow:visible !important;
+}
 </style>

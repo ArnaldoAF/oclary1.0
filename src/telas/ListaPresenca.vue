@@ -48,12 +48,13 @@
                     </tbody>
                 </table>
             </div>
+        
 
             <div class="fixed-action-btn">
                 <a class="btn-floating btn-large  red modal-trigger" href="#modal1" @click="ResetObjPresenca()"> <i class="large material-icons">add</i></a>
             </div>
-
-            <div id="modal1" class="modal" @keyup.enter="ValidarPresenca()">
+        </div>
+            <div id="modal1" class="modal " @keyup.enter="ValidarPresenca()">
                 <div class="modal-content row">
 
                     <div class="input-field col s4">
@@ -95,7 +96,7 @@
                 </div>
             </div>
 
-            <div id="modal2" class="modal" @keyup.enter="ExcluirPresenca(objPresenca)">
+            <div id="modal2" class="modal " @keyup.enter="ExcluirPresenca(objPresenca)">
                 <div class="modal-content">
                     <h5>Deseja excluir a entrada de presença do dia do dia {{objPresenca.data | formatDate}} ?</h5>
                 </div>
@@ -106,7 +107,7 @@
                 </div>
             </div>
 
-        </div>
+        
 
 
     </div>
@@ -362,3 +363,27 @@ export default {
     }
 }
 </script>
+<style>
+
+.modal { width: 75% !important ; max-height: 100% !important }
+.modal tbody {
+    display:block;
+    height:320px;
+    overflow:auto;
+}
+.modal thead, .modal tbody tr {
+    display:table;
+    width:100%;
+    table-layout:fixed;
+}
+.modal thead {
+    width: calc( 100% - 1em )
+}
+.modal table {
+    width:100%;
+}
+
+#modal1 {
+     overflow:visible !important;
+}
+</style>

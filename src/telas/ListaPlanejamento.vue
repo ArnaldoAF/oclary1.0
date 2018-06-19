@@ -81,6 +81,7 @@
             <div class="fixed-action-btn">
                 <a class="btn-floating btn-large red modal-trigger" href="#modal1"> <i class="large material-icons">add</i></a>
             </div>
+        </div>
 
             <div id="modal1" class="modal" @keyup.enter="ValidarPlanejamento()">
                 <div class="modal-content row ">
@@ -126,7 +127,7 @@
                 </div>
             </div>
 
-        </div>
+        
     </div>
 </template>
 <script>

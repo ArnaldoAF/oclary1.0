@@ -59,6 +59,7 @@
             <div class="fixed-action-btn">
                 <a class="btn-floating btn-large  red modal-trigger" href="#modal1" @click="ResetObjProva()"> <i class="large material-icons">add</i></a>
             </div>
+        </div>
 
             <div id="modal1" class="modal" style="overflow: visible !important;" @keyup.enter="ValidarProva()">
                 <div class="modal-content row" >
@@ -170,7 +171,7 @@
                 </div>
             </div>
 
-        </div>
+        
 
     </div>
 </template>
