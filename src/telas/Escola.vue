@@ -12,9 +12,9 @@
         </div>
             <!-- LISTA DE ESCOLAS -->
             <ul v-else class="collapsible" >
-                <li v-for="escola in escolasArray" >
+                <li v-for="(escola,key,index) in escolasArray" >
                     <div class="collapsible-header">
-                        <strong>  {{escola.nome}} </strong>
+                        <strong>  {{escola.nome}}</strong>
                         
                         <span class=" badge">
                             <span class="badge left" data-badge-caption=""> 
@@ -138,7 +138,7 @@
         
             <div id="modal3" class="modal" @keyup.enter="ExcluirEscola(objEscola); ">
                 <div class="modal-content">
-                    <h5>Deseja excluir a escola {{nomeEscola}}?</h5>
+                    <h5>Deseja excluir a escola <strong style="font-weight:bold">{{nomeEscola}}</strong> ?</h5>
                 </div>
                 <div class="modal-footer">
                     <button class="btn modal-action modal-close red" @click="nomeEscola=''; objEscola=null">CANCELAR</button>
@@ -149,7 +149,7 @@
 
             <div id="modal4" class="modal" @keyup.enter="ExcluirTurma(objTurma); ">
                 <div class="modal-content">
-                    <h5>Deseja excluir a turma {{objTurma.nome}} ? Essa ação irá excluir todos os dados dessa turma!</h5>
+                    <h5>Deseja excluir a turma <strong style="font-weight:bold">{{objTurma.nome}}</strong> ? <br> Essa ação irá excluir todos os dados dessa turma!</h5>
                 </div>
                 <div class="modal-footer">
                     <button class="btn modal-action modal-close red" @click="ResetObjTurma()">CANCELAR</button>
@@ -228,6 +228,7 @@ export default {
                     $("[autofocus]", e.target).focus();
                 });
             });
+            
             document.addEventListener('DOMContentLoaded', function() {
                 //var elems = document.querySelectorAll('.modal');
                 //var instances = M.Modal.init(elems, options);
@@ -485,3 +486,8 @@ export default {
     }
 };
 </script>
+<style>
+
+.modal { width: 45% !important ; max-height: 100% !important;}
+#modal3, #modal4 { width: 45% !important ; max-height: 100% !important }
+</style>

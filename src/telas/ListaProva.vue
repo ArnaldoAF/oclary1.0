@@ -110,7 +110,7 @@
 
             <div id="modal2" class="modal">
                 <div class="modal-content ">
-                    <h1>NOTAS</h1>
+                    <h5>{{objProva.nome}} -  NOTAS</h5>
                     <div class="responsive-table table-status-sheet">
                     <table id="tabelaNotas">
                         <thead>
@@ -162,7 +162,7 @@
 
             <div id="modal3" class="modal" @keyup.enter="ExcluirProva(objProva)">
                 <div class="modal-content">
-                    <h5>Deseja excluir a prova {{objProva.nome}} ?</h5>
+                    <h5>Deseja excluir a prova <strong style="font-weight:bold">{{objProva.nome}} </strong> ?</h5>
                 </div>
                 <div class="modal-footer">
                     <button class="btn modal-action modal-close red" @click="ResetObjProva()">CANCELAR</button>
@@ -540,6 +540,9 @@ export default {
 <style>
 
 .modal { width: 75% !important ; max-height: 100% !important }
+#modal3 { width: 50% !important ; max-height: 100% !important }
+
+
 .modal tbody {
     display:block;
     height:320px;

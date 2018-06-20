@@ -118,7 +118,7 @@
 
             <div id="modal2" class="modal" @keyup.enter="ExcluirPlanejamento(objPlanejamento)">
                 <div class="modal-content">
-                    <h5>Deseja excluir o planejamento do dia {{objPlanejamento.data | formatDate}} ?</h5>
+                    <h5>Deseja excluir o planejamento do dia <strong style="font-weight:bold">{{objPlanejamento.data | formatDate}} </strong> ?</h5>
                 </div>
                 <div class="modal-footer">
                     <button class="btn modal-action modal-close red" @click="ResetObjPlanejamento()">CANCELAR</button>
@@ -383,3 +383,9 @@ export default {
     }
 }
 </script>
+<style>
+
+#modal2 { width: 50% !important ; max-height: 100% !important }
+
+</style>
+

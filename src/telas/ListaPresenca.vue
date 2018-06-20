@@ -98,7 +98,7 @@
 
             <div id="modal2" class="modal " @keyup.enter="ExcluirPresenca(objPresenca)">
                 <div class="modal-content">
-                    <h5>Deseja excluir a entrada de presença do dia do dia {{objPresenca.data | formatDate}} ?</h5>
+                    <h5>Deseja excluir a entrada de presença do dia do dia <strong style="font-weight:bold">{{objPresenca.data | formatDate}} </strong> ?</h5>
                 </div>
                 <div class="modal-footer">
                     <button class="btn modal-action modal-close red" @click="ResetObjPresenca">CANCELAR</button>
@@ -366,6 +366,10 @@ export default {
 <style>
 
 .modal { width: 75% !important ; max-height: 100% !important }
+#modal2 { width: 40% !important ; max-height: 100% !important }
+
+
+
 .modal tbody {
     display:block;
     height:320px;

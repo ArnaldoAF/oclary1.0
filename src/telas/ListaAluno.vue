@@ -111,7 +111,7 @@
                         </table>
                     </div>
                 </div>
-                <div class="modal-footer">
+                <div class="modal-footer ">
                     <div class="left"> <h4 >Média: {{media | formatNota}} </h4> </div>
                     <button class="btn modal-action modal-close red" @click="modalNota=null;">CANCELAR</button>
                     <button class="btn modal-action modal-close green" @click="UpdateNota()">EDITAR</button>
@@ -144,7 +144,7 @@
                         </table>
                     </div>
                 </div>
-                <div class="modal-footer">
+                <div class="modal-footer ">
                     <h4 class="left">Porcentagem: {{porcetagemPre | formatNota}}% </h4>
                     <button class="btn modal-action modal-close red" @click="modalPresenca=null">CANCELAR</button>
                     <button class="btn modal-action modal-close green" @click="UpdatePresenca()">EDITAR</button>
@@ -153,7 +153,7 @@
 
             <div id="modal4" class="modal" @keyup.enter="ExcluirAluno(objAluno); ">
                 <div class="modal-content">
-                    <h5>Deseja excluir o aluno {{objAluno.nome}} ? Essa ação irá excluir notas e presenças!</h5>
+                    <h5>Deseja excluir o aluno <strong style="font-weight:bold">{{objAluno.nome}}</strong> ?  </br> Essa ação irá excluir notas e presenças!</h5>
                 </div>
                 <div class="modal-footer">
                     <button class="btn modal-action modal-close red" @click="ResetObjAluno()">CANCELAR</button>
@@ -668,10 +668,22 @@ export default {
 }
 </script>
 <style>
-.modal { width: 75% !important ; max-height: 100% !important }
+
+.modal { width: 55% !important ; max-height: 100% !important;}
+#modal1 { width: 55% !important ; max-height: 100% !important }
+#modal4 { width: 50% !important ; max-height: 100% !important }
+#modal2 { width: 55% !important ; max-height: 100% !important; }
+#modal3 { width: 55% !important ; max-height: 100% !important;}
+
+
+
+.modal-content {
+    overflow-y: hidden !important;
+
+}
 .modal tbody {
-    display:block;
-    height:320px;
+    display:block ;
+    max-height:40vh;
     overflow:auto;
 }
 .modal thead, .modal tbody tr {
