@@ -61,7 +61,7 @@
             </div>
         </div>
 
-            <div id="modal1" class="modal" style="overflow: visible !important;" @keyup.enter="ValidarProva()">
+            <div id="modal1" class="modal" style="overflow-y: visible !important;" @keyup.enter="ValidarProva()">
                 <div class="modal-content row" >
 
                     <div class="input-field col s4">
@@ -74,19 +74,19 @@
                         <label class="active" for="conteudo">Nome</label>
                     </div>
 
-                    <div class="input-field col s4" >
-                        <select id="selectPeso" v-model="objProva.peso" style="z-index:100; overflow-y: visible">
-                        <option value="0">0%</option>
-                        <option value="1">10%</option>
-                        <option value="2">20%</option>
-                        <option value="3">30%</option>
-                        <option value="4">40%</option>
-                        <option value="5">50%</option>
-                        <option value="6">60%</option>
-                        <option value="7">70%</option>
-                        <option value="8">80%</option>
-                        <option value="9">90%</option>
-                        <option value="10">100%</option>
+                    <div class="input-field col s4" style="z-index:100; overflow-y: visible !important">
+                        <select id="selectPeso" v-model="objProva.peso" >
+                            <option value="0">0%</option>
+                            <option value="1">10%</option>
+                            <option value="2">20%</option>
+                            <option value="3">30%</option>
+                            <option value="4">40%</option>
+                            <option value="5">50%</option>
+                            <option value="6">60%</option>
+                            <option value="7">70%</option>
+                            <option value="8">80%</option>
+                            <option value="9">90%</option>
+                            <option value="10">100%</option>
                         </select>
                         <label>Peso</label>
                     </div>
